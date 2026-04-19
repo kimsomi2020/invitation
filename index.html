@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>모바일 청첩장</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <main class="invite" id="top">
+        <!-- Hero -->
+        <section class="hero" id="hero" aria-label="메인">
+          <div class="hero__media">
+            <img class="hero__img" src="" alt="" width="1200" height="1600" />
+            <div class="hero__overlay"></div>
+          </div>
+          <p class="hero__float-title" id="hero-title"></p>
+          <div class="hero__content">
+            <p class="hero__subtitle" id="hero-subtitle"></p>
+            <p class="hero__venue" id="hero-venue"></p>
+          </div>
+          <div class="hero__actions">
+            <button type="button" class="btn btn--glass" id="btn-to-location">오시는 길</button>
+          </div>
+        </section>
+
+        <!-- Greeting -->
+        <section class="section section--cream" id="greeting">
+          <div class="section__inner greeting" id="greeting-content"></div>
+          <div class="names-block" id="names-block"></div>
+          <div class="names-block__action">
+            <button type="button" class="btn-solid" id="btn-family-contact" aria-haspopup="dialog">
+              연락하기
+            </button>
+          </div>
+        </section>
+
+        <!-- Profiles -->
+        <section class="section" id="profile">
+          <div class="profiles">
+            <article class="profile-card">
+              <div class="profile-card__photo">
+                <img id="profile-groom-img" src="" alt="" />
+              </div>
+              <h3 class="profile-card__name" id="profile-groom-name"></h3>
+              <p class="profile-card__msg" id="profile-groom-msg"></p>
+            </article>
+            <article class="profile-card">
+              <div class="profile-card__photo">
+                <img id="profile-bride-img" src="" alt="" />
+              </div>
+              <h3 class="profile-card__name" id="profile-bride-name"></h3>
+              <p class="profile-card__msg" id="profile-bride-msg"></p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Wedding Day / Calendar -->
+        <section class="section section--cream" id="wedding-day">
+          <h2 class="section__title section__title--serif" id="wedding-day-title">Wedding Day</h2>
+          <p class="wedding-month-badge" id="wedding-month-label">7월</p>
+          <div class="countdown" id="countdown" aria-live="polite">
+            <p class="countdown__label">결혼식까지</p>
+            <div class="countdown__digits">
+              <span class="countdown__block"
+                ><strong id="cd-days">0</strong><small>일</small></span
+              >
+              <span class="countdown__sep">:</span>
+              <span class="countdown__block"
+                ><strong id="cd-hours">0</strong><small>시</small></span
+              >
+              <span class="countdown__sep">:</span>
+              <span class="countdown__block"
+                ><strong id="cd-mins">0</strong><small>분</small></span
+              >
+              <span class="countdown__sep">:</span>
+              <span class="countdown__block"
+                ><strong id="cd-secs">0</strong><small>초</small></span
+              >
+            </div>
+            <p class="countdown__done" id="countdown-done" hidden>D-day!</p>
+          </div>
+          <div class="calendar-wrap" id="calendar-root"></div>
+          <div class="wedding-day__meta" id="wedding-day-meta"></div>
+          <div class="quick-actions" id="quick-actions" aria-label="빠른 기능"></div>
+        </section>
+
+        <!-- Gallery -->
+        <section class="section" id="gallery">
+          <h2 class="section__title section__title--gallery">GALLERY</h2>
+          <div class="gallery-grid" id="gallery-grid"></div>
+        </section>
+
+        <!-- Location -->
+        <section class="section section--cream" id="location">
+          <h2 class="section__title" id="location-title">오시는 길</h2>
+          <p class="location__venue" id="location-venue"></p>
+          <p class="location__address" id="location-address"></p>
+          <div class="map-frame map-frame--with-pin">
+            <iframe
+              id="map-iframe"
+              title="지도"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
+            <div class="map-couple-pin" aria-hidden="true" title="예식장 위치">
+              <div class="map-couple-pin__marker">
+                <span class="map-couple-pin__svg" id="map-pin-illustration"></span>
+              </div>
+            </div>
+          </div>
+          <div class="direction-list" id="direction-list"></div>
+          <div class="nav-apps" id="nav-apps" aria-label="길찾기 앱"></div>
+        </section>
+
+        <!-- Instagram style -->
+        <section class="section" id="instagram">
+          <div class="ig-card">
+            <div class="ig-card__head">
+              <img class="ig-card__avatar" id="ig-avatar" src="" alt="" width="40" height="40" />
+              <span class="ig-card__user" id="ig-user"></span>
+            </div>
+            <div class="ig-card__photo">
+              <img id="ig-post" src="" alt="" />
+            </div>
+            <div class="ig-card__toolbar" aria-hidden="true">
+              <span class="ig-icon ig-icon--heart" title="좋아요"></span>
+              <span class="ig-icon ig-icon--comment"></span>
+              <span class="ig-icon ig-icon--share"></span>
+              <span class="ig-icon ig-icon--save"></span>
+            </div>
+            <p class="ig-card__likes" id="ig-likes"></p>
+            <p class="ig-card__caption" id="ig-caption"></p>
+          </div>
+        </section>
+
+        <!-- Meal -->
+        <section class="section" id="meal">
+          <h2 class="section__title" id="meal-title">식사 안내</h2>
+          <div class="meal__photo">
+            <img id="meal-img" src="" alt="" />
+          </div>
+          <p class="meal__text" id="meal-text"></p>
+        </section>
+
+        <!-- Accounts -->
+        <section class="section section--cream" id="gift">
+          <h2 class="section__title" id="accounts-title">마음 전하실 곳</h2>
+          <div class="accordion" id="accounts-accordion"></div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer" id="contact">
+          <p class="footer__msg" id="footer-msg"></p>
+          <div class="footer__contacts" id="footer-contacts"></div>
+        </footer>
+      </main>
+    </div>
+
+    <!-- 연락하기 -->
+    <div class="modal" id="family-contact-modal" hidden role="dialog" aria-modal="true" aria-labelledby="family-contact-title">
+      <div class="modal__backdrop" id="family-contact-backdrop" tabindex="-1"></div>
+      <div class="modal__panel">
+        <div class="modal__head">
+          <h2 class="modal__title" id="family-contact-title">연락처</h2>
+          <button type="button" class="modal__close" id="family-contact-close" aria-label="닫기">×</button>
+        </div>
+        <div class="modal__body" id="family-contact-body"></div>
+      </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" hidden aria-modal="true" role="dialog">
+      <button type="button" class="lightbox__close" id="lightbox-close" aria-label="닫기">×</button>
+      <button type="button" class="lightbox__nav lightbox__nav--prev" id="lightbox-prev" aria-label="이전">‹</button>
+      <div class="lightbox__frame">
+        <img class="lightbox__img" id="lightbox-img" alt="" />
+      </div>
+      <button type="button" class="lightbox__nav lightbox__nav--next" id="lightbox-next" aria-label="다음">›</button>
+      <div class="lightbox__counter" id="lightbox-counter"></div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
