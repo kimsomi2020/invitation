@@ -1,3 +1,4 @@
+
 (function () {
   "use strict";
 
@@ -159,10 +160,17 @@
                 (p) => `
               <li class="contact-list__item">
                 <div class="contact-list__who">
-                  <span class="contact-list__name">${p.name}</span>
                   <span class="contact-list__role">${p.role}</span>
+                  <span class="contact-list__name">${p.name}</span>
                 </div>
-                <a class="contact-list__tel" href="tel:${String(p.phone).replace(/[^0-9+]/g, "")}">${p.phone}</a>
+                <div class="contact-list__actions">
+                  <a class="contact-list__icon-btn" href="tel:${String(p.phone).replace(/[^0-9+]/g, "")}" aria-label="${
+                    p.name
+                  }에게 전화">📞</a>
+                  <a class="contact-list__icon-btn" href="sms:${String(p.phone).replace(/[^0-9+]/g, "")}" aria-label="${
+                    p.name
+                  }에게 문자">💬</a>
+                </div>
               </li>
             `
               )
@@ -178,15 +186,32 @@
     const openBtn = document.getElementById("btn-family-contact");
     const closeBtn = document.getElementById("family-contact-close");
     const backdrop = document.getElementById("family-contact-backdrop");
+    let openingTimer = null;
 
     function openModal() {
+      if (openingTimer) clearTimeout(openingTimer);
+      openBtn.disabled = true;
+      openBtn.classList.add("is-waiting");
+      modal.classList.remove("is-open");
       modal.hidden = false;
-      document.body.style.overflow = "hidden";
-      closeBtn.focus();
+      openingTimer = setTimeout(() => {
+        document.body.style.overflow = "hidden";
+        modal.classList.add("is-open");
+        closeBtn.focus();
+        openBtn.disabled = false;
+        openBtn.classList.remove("is-waiting");
+      }, 220);
     }
 
     function closeModal() {
+      if (openingTimer) {
+        clearTimeout(openingTimer);
+        openingTimer = null;
+      }
       modal.hidden = true;
+      modal.classList.remove("is-open");
+      openBtn.disabled = false;
+      openBtn.classList.remove("is-waiting");
       document.body.style.overflow = "";
       openBtn.focus();
     }
@@ -524,39 +549,33 @@
   function initMusic() {
     const audio = document.getElementById("bgm-audio");
     const btn = document.getElementById("music-toggle");
+    const bottomBar = document.getElementById("bottom-control");
+    const zoomBtn = document.getElementById("btn-font-zoom");
     const src = cfg.music && cfg.music.src;
     if (!audio || !btn) return;
+    btn.hidden = true;
+
+    function toggleZoom() {
+      const next = !document.documentElement.classList.contains("font-zoom");
+      document.documentElement.classList.toggle("font-zoom", next);
+      document.body.classList.toggle("font-zoom", next);
+      if (!zoomBtn) return;
+      zoomBtn.setAttribute("aria-pressed", next ? "true" : "false");
+      zoomBtn.textContent = next ? "기본 크기로 보기" : "글자 크게 보기";
+    }
+
+    if (zoomBtn) zoomBtn.addEventListener("click", toggleZoom);
+
     if (!src) {
-      btn.hidden = true;
+      if (bottomBar) bottomBar.hidden = false;
+      window.__revealMusicButton = () => {};
       return;
     }
     audio.src = src;
-    btn.hidden = true;
-
-    function syncBtn() {
-      const on = !audio.paused && !audio.muted;
-      btn.setAttribute("aria-pressed", on ? "true" : "false");
-      btn.setAttribute("aria-label", on ? "배경음 끄기" : "배경음 켜기");
-      btn.classList.toggle("is-playing", on);
-    }
-
-    btn.addEventListener("click", () => {
-      if (audio.paused) {
-        audio.play().catch(() => {});
-        audio.muted = false;
-      } else {
-        audio.muted = !audio.muted;
-      }
-      syncBtn();
-    });
-
-    audio.addEventListener("volumechange", syncBtn);
-    audio.addEventListener("play", syncBtn);
-    audio.addEventListener("pause", syncBtn);
-    syncBtn();
+    if (bottomBar) bottomBar.hidden = false;
 
     window.__revealMusicButton = () => {
-      btn.hidden = false;
+      btn.hidden = true;
     };
   }
 
@@ -668,6 +687,264 @@
     if (loc) loc.addEventListener("click", () => scrollToId("location"));
   }
 
+  function initGuestbook() {
+    const form = document.getElementById("guestbook-form");
+    const list = document.getElementById("guestbook-list");
+    const empty = document.getElementById("guestbook-empty");
+    const nameInput = document.getElementById("guestbook-name");
+    const msgInput = document.getElementById("guestbook-message");
+    const nameCounter = document.getElementById("guestbook-name-counter");
+    const msgCounter = document.getElementById("guestbook-message-counter");
+    const pagination = document.getElementById("guestbook-pagination");
+    const prevBtn = document.getElementById("guestbook-prev");
+    const nextBtn = document.getElementById("guestbook-next");
+    const pageNumbers = document.getElementById("guestbook-page-numbers");
+    const adminBtn = document.getElementById("guestbook-admin-btn");
+    if (
+      !form ||
+      !list ||
+      !empty ||
+      !nameInput ||
+      !msgInput ||
+      !nameCounter ||
+      !msgCounter ||
+      !pagination ||
+      !prevBtn ||
+      !nextBtn ||
+      !pageNumbers ||
+      !adminBtn
+    )
+      return;
+
+    const STORAGE_KEY = "invite-guestbook-v1";
+    const ITEMS_PER_PAGE = 4;
+    const MAX_ITEMS = 100;
+    const ADMIN_PASSWORD =
+      (cfg.guestbook && cfg.guestbook.adminPassword) || cfg.guestbookAdminPassword || "0000";
+    let currentPage = 1;
+    let isAdminMode = false;
+
+    function safeTrim(value) {
+      return String(value || "").trim();
+    }
+
+    function formatDateLabel(iso) {
+      const d = new Date(iso);
+      const yy = String(d.getFullYear()).slice(-2);
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      const hh = String(d.getHours()).padStart(2, "0");
+      const min = String(d.getMinutes()).padStart(2, "0");
+      return `${yy}.${mm}.${dd} ${hh}:${min}`;
+    }
+
+    function readEntries() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => item && item.name && item.message && item.createdAt);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function writeEntries(entries) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries.slice(0, MAX_ITEMS)));
+    }
+
+    function makeCard(entry, index) {
+      const item = document.createElement("article");
+      item.className = "guestbook-item";
+      item.style.setProperty("--card-tilt", `${index % 2 === 0 ? -1.2 : 1.1}deg`);
+
+      const top = document.createElement("div");
+      top.className = "guestbook-item__top";
+
+      const name = document.createElement("strong");
+      name.className = "guestbook-item__name";
+      name.textContent = entry.name;
+
+      const badge = document.createElement("span");
+      badge.className = "guestbook-item__badge";
+      badge.textContent = "축하";
+
+      const message = document.createElement("p");
+      message.className = "guestbook-item__message";
+      message.textContent = entry.message;
+
+      const date = document.createElement("time");
+      date.className = "guestbook-item__date";
+      date.dateTime = entry.createdAt;
+      date.textContent = formatDateLabel(entry.createdAt);
+
+      if (isAdminMode) {
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "guestbook-item__delete";
+        del.dataset.id = entry.createdAt;
+        del.textContent = "삭제";
+        top.append(name, badge, del);
+      } else {
+        top.append(name, badge);
+      }
+      item.append(top, message, date);
+      return item;
+    }
+
+    function renderPagination(total) {
+      const pageCount = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE));
+      if (currentPage > pageCount) currentPage = pageCount;
+      pagination.hidden = pageCount <= 1;
+      prevBtn.disabled = currentPage <= 1;
+      nextBtn.disabled = currentPage >= pageCount;
+
+      pageNumbers.innerHTML = "";
+      for (let i = 1; i <= pageCount; i++) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "guestbook-page-number";
+        if (i === currentPage) b.classList.add("is-active");
+        b.textContent = String(i);
+        b.dataset.page = String(i);
+        pageNumbers.appendChild(b);
+      }
+    }
+
+    function renderEntries(entries) {
+      list.innerHTML = "";
+      if (!entries.length) {
+        empty.hidden = false;
+        pagination.hidden = true;
+        return;
+      }
+      empty.hidden = true;
+      renderPagination(entries.length);
+      const start = (currentPage - 1) * ITEMS_PER_PAGE;
+      const view = entries.slice(start, start + ITEMS_PER_PAGE);
+      view.forEach((entry, idx) => list.appendChild(makeCard(entry, idx)));
+    }
+
+    function updateCounters() {
+      nameCounter.textContent = `${nameInput.value.length}/10`;
+      msgCounter.textContent = `${msgInput.value.length}/1000`;
+    }
+
+    let entries = readEntries();
+    renderEntries(entries);
+    updateCounters();
+
+    nameInput.addEventListener("input", updateCounters);
+    msgInput.addEventListener("input", updateCounters);
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = safeTrim(nameInput.value);
+      const message = safeTrim(msgInput.value);
+      if (!name) {
+        showToast("이름을 입력해주세요.");
+        nameInput.focus();
+        return;
+      }
+      if (!message) {
+        showToast("내용을 입력해주세요.");
+        msgInput.focus();
+        return;
+      }
+
+      const next = {
+        name,
+        message,
+        createdAt: new Date().toISOString(),
+      };
+
+      entries = [next, ...entries].slice(0, MAX_ITEMS);
+      currentPage = 1;
+      writeEntries(entries);
+      renderEntries(entries);
+
+      form.reset();
+      updateCounters();
+      showToast("축하 메시지가 등록되었습니다.");
+    });
+
+    pageNumbers.addEventListener("click", (e) => {
+      const btn = e.target.closest(".guestbook-page-number");
+      if (!btn || !btn.dataset.page) return;
+      currentPage = Number(btn.dataset.page) || 1;
+      renderEntries(entries);
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (currentPage <= 1) return;
+      currentPage--;
+      renderEntries(entries);
+    });
+
+    nextBtn.addEventListener("click", () => {
+      const pageCount = Math.max(1, Math.ceil(entries.length / ITEMS_PER_PAGE));
+      if (currentPage >= pageCount) return;
+      currentPage++;
+      renderEntries(entries);
+    });
+
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest(".guestbook-item__delete");
+      if (!btn || !btn.dataset.id) return;
+      entries = entries.filter((entry) => entry.createdAt !== btn.dataset.id);
+      writeEntries(entries);
+      renderEntries(entries);
+      showToast("메시지를 삭제했습니다.");
+    });
+
+    adminBtn.addEventListener("click", () => {
+      if (isAdminMode) {
+        isAdminMode = false;
+        adminBtn.classList.remove("is-active");
+        adminBtn.textContent = "관리자";
+        renderEntries(entries);
+        showToast("관리자 모드를 종료했습니다.");
+        return;
+      }
+      const input = window.prompt("관리자 비밀번호를 입력하세요.");
+      if (input == null) return;
+      if (String(input) !== String(ADMIN_PASSWORD)) {
+        showToast("비밀번호가 올바르지 않습니다.");
+        return;
+      }
+      isAdminMode = true;
+      adminBtn.classList.add("is-active");
+      adminBtn.textContent = "삭제 모드";
+      renderEntries(entries);
+      showToast("관리자 삭제 모드가 활성화되었습니다.");
+    });
+  }
+
+// 2. 탭 전환 및 슬라이드 효과
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    
+    // 모든 탭 내용 숨기기
+    tabcontent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].classList.remove("active");
+      tabcontent[i].style.display = "none";
+    }
+  
+    // 모든 버튼 비활성화
+    tablinks = document.getElementsByClassName("tab-link");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+  
+    // 클릭한 탭만 보여주기
+    document.getElementById(tabName).style.display = "block";
+    setTimeout(() => {
+      document.getElementById(tabName).classList.add("active");
+    }, 10);
+    evt.currentTarget.className += " active";
+  }
+  
+
   renderHero();
   renderGreeting();
   renderFamilyContactModal();
@@ -685,4 +962,5 @@
   renderAccounts();
   renderFooter();
   bindHeroButtons();
+  initGuestbook();
 })();

@@ -46,6 +46,9 @@
       <span class="music-toggle__icon music-toggle__icon--off" aria-hidden="true">🔇</span>
       <span class="music-toggle__icon music-toggle__icon--on" aria-hidden="true">🔊</span>
     </button>
+    <div class="bottom-control" id="bottom-control" hidden>
+      <button type="button" class="bottom-control__btn" id="btn-font-zoom" aria-pressed="false">글자 크게 보기</button>
+    </div>
 
     <audio id="bgm-audio" preload="auto" loop></audio>
 
@@ -170,6 +173,50 @@
         <section class="section section--cream" id="gift">
           <h2 class="section__title" id="accounts-title">마음 전하실 곳</h2>
           <div class="accordion" id="accounts-accordion"></div>
+        </section>
+
+        <!-- Guestbook -->
+        <section class="section guestbook-section" id="guestbook">
+          <div class="guestbook-head">
+            <h2 class="section__title">방명록</h2>
+            <button type="button" class="guestbook-admin-btn" id="guestbook-admin-btn">관리자</button>
+          </div>
+          <p class="guestbook-section__desc">
+            따뜻한 마음이 담긴 축하의 글을 남겨주시면<br />
+            소중한 추억으로 간직하겠습니다.
+          </p>
+          <form class="guestbook-form" id="guestbook-form">
+            <div class="guestbook-form__field">
+              <div class="guestbook-form__head">
+                <label for="guestbook-name">이름</label>
+                <span class="guestbook-form__counter" id="guestbook-name-counter">0/10</span>
+              </div>
+              <input id="guestbook-name" name="name" type="text" maxlength="10" placeholder="이름을 입력하세요" required />
+            </div>
+            <div class="guestbook-form__field">
+              <div class="guestbook-form__head">
+                <label for="guestbook-message">내용</label>
+                <span class="guestbook-form__counter" id="guestbook-message-counter">0/1000</span>
+              </div>
+              <textarea
+                id="guestbook-message"
+                name="message"
+                maxlength="1000"
+                rows="5"
+                placeholder="내용을 입력하세요"
+                required
+              ></textarea>
+            </div>
+            <button type="submit" class="guestbook-form__submit">등록하기</button>
+          </form>
+
+          <div class="guestbook-list" id="guestbook-list" aria-live="polite"></div>
+          <p class="guestbook-empty" id="guestbook-empty">첫 번째 축하 메시지를 남겨주세요.</p>
+          <div class="guestbook-pagination" id="guestbook-pagination" hidden>
+            <button type="button" class="guestbook-page-btn" id="guestbook-prev" aria-label="이전 페이지">‹</button>
+            <div class="guestbook-page-numbers" id="guestbook-page-numbers"></div>
+            <button type="button" class="guestbook-page-btn" id="guestbook-next" aria-label="다음 페이지">›</button>
+          </div>
         </section>
 
         <!-- Footer -->
