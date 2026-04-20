@@ -117,9 +117,29 @@
     }
     const names = document.getElementById("names-block");
     if (names) {
+      const sep = '<span class="names-block__sep">*</span>';
+      const gp = g.groomParents || [];
+      const bp = g.brideParents || [];
+      const gParents =
+        gp.length >= 2
+          ? `<span>${gp[0]}</span>${sep}<span>${gp[1]}</span>`
+          : g.groomLine || "";
+      const bParents =
+        bp.length >= 2
+          ? `<span>${bp[0]}</span>${sep}<span>${bp[1]}</span>`
+          : g.brideLine || "";
+      const gName = g.groomName || "";
+      const bName = g.brideName || "";
       names.innerHTML = `
-        <p class="names-block__line">${g.groomLine}</p>
-        <p class="names-block__line names-block__line--spaced">${g.brideLine}</p>
+        <div class="names-block__parents-row">
+          <div class="names-block__parent-pair">${gParents}</div>
+          <div class="names-block__parent-pair">${bParents}</div>
+        </div>
+        <div class="names-block__couple-row">
+          <span class="names-block__groom">${gName}</span>
+          <span class="names-block__heart" aria-hidden="true">♥</span>
+          <span class="names-block__bride">${bName}</span>
+        </div>
       `;
     }
   }
@@ -357,6 +377,22 @@
     grid.after(dots);
   }
 
+  function fillLightboxSocial() {
+    const gs = cfg.gallerySocial || cfg.instagram;
+    if (!gs) return;
+    const av = document.getElementById("lightbox-ig-avatar");
+    const user = document.getElementById("lightbox-ig-user");
+    const likes = document.getElementById("lightbox-ig-likes");
+    const cap = document.getElementById("lightbox-ig-caption");
+    if (av) av.src = resolveImage(gs.avatar);
+    if (user) {
+      const u = gs.username || "";
+      user.textContent = u.startsWith("@") ? u : u ? `@${u}` : "";
+    }
+    if (likes) likes.textContent = gs.likedBy || "";
+    if (cap) cap.textContent = gs.caption || "";
+  }
+
   function setupLightbox() {
     const lb = document.getElementById("lightbox");
     const img = document.getElementById("lightbox-img");
@@ -365,6 +401,8 @@
     const next = document.getElementById("lightbox-next");
     const counter = document.getElementById("lightbox-counter");
     let index = 0;
+
+    fillLightboxSocial();
 
     function update() {
       if (!galleryUrls.length) return;
@@ -391,12 +429,16 @@
       open(parseInt(btn.dataset.index, 10));
     });
 
+    const dim = document.getElementById("lightbox-dim");
     close.addEventListener("click", closeLb);
-    prev.addEventListener("click", () => {
+    if (dim) dim.addEventListener("click", closeLb);
+    prev.addEventListener("click", (e) => {
+      e.stopPropagation();
       index = (index - 1 + galleryUrls.length) % galleryUrls.length;
       update();
     });
-    next.addEventListener("click", () => {
+    next.addEventListener("click", (e) => {
+      e.stopPropagation();
       index = (index + 1) % galleryUrls.length;
       update();
     });
@@ -472,13 +514,82 @@
     `;
   }
 
-  function renderInstagram() {
-    const ig = cfg.instagram;
-    document.getElementById("ig-avatar").src = resolveImage(ig.avatar);
-    document.getElementById("ig-post").src = resolveImage(ig.postImage);
-    document.getElementById("ig-user").textContent = ig.username;
-    document.getElementById("ig-likes").textContent = ig.likedBy;
-    document.getElementById("ig-caption").textContent = ig.caption;
+  function tryPlayBgm() {
+    const audio = document.getElementById("bgm-audio");
+    if (!audio || !audio.src) return;
+    audio.muted = false;
+    audio.play().catch(() => {});
+  }
+
+  function initMusic() {
+    const audio = document.getElementById("bgm-audio");
+    const btn = document.getElementById("music-toggle");
+    const src = cfg.music && cfg.music.src;
+    if (!audio || !btn) return;
+    if (!src) {
+      btn.hidden = true;
+      return;
+    }
+    audio.src = src;
+    btn.hidden = true;
+
+    function syncBtn() {
+      const on = !audio.paused && !audio.muted;
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.setAttribute("aria-label", on ? "배경음 끄기" : "배경음 켜기");
+      btn.classList.toggle("is-playing", on);
+    }
+
+    btn.addEventListener("click", () => {
+      if (audio.paused) {
+        audio.play().catch(() => {});
+        audio.muted = false;
+      } else {
+        audio.muted = !audio.muted;
+      }
+      syncBtn();
+    });
+
+    audio.addEventListener("volumechange", syncBtn);
+    audio.addEventListener("play", syncBtn);
+    audio.addEventListener("pause", syncBtn);
+    syncBtn();
+
+    window.__revealMusicButton = () => {
+      btn.hidden = false;
+    };
+  }
+
+  function initLanding() {
+    const landing = document.getElementById("landing");
+    const btn = document.getElementById("landing-open");
+    const paper = document.getElementById("landing-paper-text");
+    if (!landing || !btn) {
+      if (typeof window.__revealMusicButton === "function") window.__revealMusicButton();
+      return;
+    }
+    if (paper) paper.textContent = cfg.hero.title || "저희 결혼합니다";
+    const wax = document.getElementById("landing-wax-letter");
+    if (wax && cfg.landingWaxLetter) wax.textContent = cfg.landingWaxLetter;
+
+    function finish() {
+      landing.classList.add("is-done");
+      document.body.classList.remove("landing-active");
+      if (typeof window.__revealMusicButton === "function") window.__revealMusicButton();
+      setTimeout(() => {
+        landing.hidden = true;
+        landing.setAttribute("aria-hidden", "true");
+      }, 650);
+    }
+
+    btn.addEventListener("click", () => {
+      if (landing.classList.contains("is-open")) return;
+      landing.classList.add("is-open");
+      tryPlayBgm();
+      setTimeout(finish, 2100);
+    });
+
+    document.body.classList.add("landing-active");
   }
 
   function renderMeal() {
@@ -567,8 +678,9 @@
   renderQuickActions();
   renderGallery();
   setupLightbox();
+  initMusic();
+  initLanding();
   renderLocation();
-  renderInstagram();
   renderMeal();
   renderAccounts();
   renderFooter();

@@ -2,6 +2,9 @@
  * 모바일 청첩장 설정 — 사진·문구·계좌·장소·연락처만 여기서 수정하세요.
  */
 window.INVITATION_CONFIG = {
+  /** 봉투 왁스 실에 새길 이니셜 (한 글자) */
+  landingWaxLetter: "G",
+
   hero: {
     image: "images/hero.jpg",
     title: "저희 결혼합니다",
@@ -16,8 +19,11 @@ window.INVITATION_CONFIG = {
       "저희 두 사람이 사랑의 이름으로 지켜나갈 수 있게",
       "앞날을 축복해 주시면 감사하겠습니다.",
     ],
-    groomLine: "길동균 마치다 치에꼬의 차남 길필선",
-    brideLine: "김홍득 구보 나미에의 차녀 김소미",
+    /** 부모님 이름 두 분 — 사이에 * 로 표시됩니다 */
+    groomParents: ["길동균", "마치다 치에꼬"],
+    brideParents: ["김홍득", "구보 나미에"],
+    groomName: "길필선",
+    brideName: "김소미",
   },
 
   /** 인사 아래 「연락하기」에 표시 — 번호는 필요에 맞게 수정하세요. */
@@ -98,12 +104,19 @@ window.INVITATION_CONFIG = {
     },
   },
 
-  instagram: {
+  /**
+   * 갤러리 라이트박스 하단 인스타그램 스타일 UI (페이지 본문에는 표시 안 함)
+   */
+  gallerySocial: {
     username: "our_wedding_day",
     avatar: "images/insta-avatar.jpg",
-    postImage: "images/insta-post.jpg",
     caption: "2026. 7. 11. 스타시티 아트홀 💍 #웨딩 #청첩장",
     likedBy: "좋아요 128개",
+  },
+
+  /** 배경음 — 빈 문자열이면 음악·스피커 버튼 비활성. mp3 파일을 audio 폴더에 두고 경로 지정 */
+  music: {
+    src: "",
   },
 
   meal: {
@@ -133,6 +146,7 @@ window.INVITATION_CONFIG = {
     bridePhone: "010-8765-4321",
   },
 
-  useDemoPlaceholders: true,
+  useDemoPlaceholders: false,
   demoPlaceholder: (seed) => `https://picsum.photos/seed/${seed}/800/1200`,
 };
+

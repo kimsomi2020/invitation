@@ -44,6 +44,218 @@ button {
   cursor: pointer;
 }
 
+body.landing-active {
+  overflow: hidden;
+}
+
+/* 오프닝 봉투 */
+.landing {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  transition: opacity 0.55s ease, visibility 0.55s;
+}
+
+.landing[hidden] {
+  display: none !important;
+}
+
+.landing__bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(165deg, #f3efe8 0%, #e8e2d8 45%, #ddd5c9 100%);
+}
+
+.landing__inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 22rem;
+}
+
+.landing__studio {
+  margin: 0 0 1.75rem;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: #3a3530;
+  text-transform: uppercase;
+}
+
+.landing__open-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.landing__hint {
+  display: block;
+  margin-top: 1.35rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: #6d6760;
+}
+
+.landing__envelope {
+  position: relative;
+  width: min(72vw, 280px);
+  height: 200px;
+  margin: 0 auto;
+  perspective: 900px;
+  transform-style: preserve-3d;
+}
+
+.landing__envelope-back {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 58%;
+  background: linear-gradient(180deg, #ebe4d8 0%, #ddd4c6 100%);
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.landing__envelope-paper {
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  transform: translateX(-50%);
+  width: 86%;
+  height: 48%;
+  background: #fffef8;
+  border-radius: 3px;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  z-index: 2;
+  transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing__paper-text {
+  font-family: var(--font-serif);
+  font-size: clamp(0.72rem, 2.8vw, 0.85rem);
+  font-weight: 600;
+  color: #4a4540;
+  line-height: 1.45;
+}
+
+.landing__envelope-flap {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: min(36vw, 140px) solid transparent;
+  border-right: min(36vw, 140px) solid transparent;
+  border-bottom: 100px solid #e5ddd0;
+  filter: drop-shadow(0 -2px 6px rgba(0, 0, 0, 0.08));
+  transform-origin: 50% 100%;
+  transition: transform 0.95s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 4;
+}
+
+.landing__wax {
+  position: absolute;
+  left: 50%;
+  top: 72px;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #9a3d45 0%, #6d1f28 55%, #4a1218 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+}
+
+.landing__wax-letter {
+  font-family: "Times New Roman", Georgia, var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: rgba(255, 245, 230, 0.92);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.landing.is-open .landing__envelope-flap {
+  transform: translateX(-50%) rotateX(-175deg);
+}
+
+.landing.is-open .landing__envelope-paper {
+  transform: translateX(-50%) translateY(-115%);
+}
+
+.landing.is-open .landing__wax {
+  opacity: 0;
+  transform: translateX(-50%) scale(0.4);
+  pointer-events: none;
+}
+
+.landing.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.music-toggle {
+  position: fixed;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 4000;
+  width: 3rem;
+  height: 3rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+
+.music-toggle:active {
+  transform: scale(0.96);
+}
+
+.music-toggle__icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.music-toggle__icon--on {
+  display: none;
+}
+
+.music-toggle.is-playing .music-toggle__icon--off {
+  display: none;
+}
+
+.music-toggle.is-playing .music-toggle__icon--on {
+  display: inline;
+}
+
 .app-shell {
   min-height: 100dvh;
   display: flex;
@@ -303,8 +515,8 @@ button {
 .names-block {
   margin-top: 2rem;
   text-align: center;
-  font-size: 0.88rem;
-  line-height: 1.9;
+  font-size: 0.82rem;
+  line-height: 1.75;
   color: var(--text);
 }
 
@@ -313,19 +525,48 @@ button {
   font-family: var(--font-serif);
 }
 
-.names-block .dot {
-  margin: 0 0.2em;
-  opacity: 0.5;
+.names-block__parents-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.75rem;
+  align-items: start;
+  max-width: 22rem;
+  margin: 0 auto;
+  font-size: 0.78rem;
+  line-height: 1.65;
 }
 
-.names-block__line {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.85;
+.names-block__parent-pair {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem 0.35rem;
 }
 
-.names-block__line--spaced {
-  margin-top: 0.65rem;
+.names-block__sep {
+  display: inline-block;
+  margin: 0 0.15rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+.names-block__couple-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 5vw, 2.25rem);
+  margin-top: 1.15rem;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.names-block__heart {
+  color: var(--accent-heart);
+  font-size: 0.95rem;
+  line-height: 1;
 }
 
 .names-block__action {
@@ -654,54 +895,7 @@ button {
   background: var(--bg-cream);
 }
 
-/* Instagram */
-.ig-card {
-  max-width: 100%;
-  margin: 0 auto;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  overflow: hidden;
-  background: #fff;
-}
-
-.ig-card__head {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.65rem 0.85rem;
-  border-bottom: 1px solid var(--line);
-}
-
-.ig-card__avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #eee;
-}
-
-.ig-card__user {
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.ig-card__photo {
-  aspect-ratio: 1;
-  background: #eee;
-}
-
-.ig-card__photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.ig-card__toolbar {
-  display: flex;
-  gap: 1rem;
-  padding: 0.65rem 0.85rem 0.35rem;
-}
-
+/* 인스타 스타일 아이콘 (갤러리 라이트박스) */
 .ig-icon {
   width: 1.35rem;
   height: 1.35rem;
@@ -728,20 +922,6 @@ button {
 .ig-icon--save {
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2'%3E%3Cpath d='M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z'/%3E%3C/svg%3E")
     center/contain no-repeat;
-}
-
-.ig-card__likes {
-  margin: 0;
-  padding: 0 0.85rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-.ig-card__caption {
-  margin: 0;
-  padding: 0.35rem 0.85rem 0.85rem;
-  font-size: 0.82rem;
-  line-height: 1.5;
 }
 
 /* Meal */
@@ -885,12 +1065,11 @@ button {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* Lightbox */
+/* Lightbox — 인스타그램 포스트 형태 */
 .lightbox {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(0, 0, 0, 0.92);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -902,36 +1081,94 @@ button {
   display: none !important;
 }
 
-.lightbox__frame {
+.lightbox__dim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(0, 0, 0, 0.88);
+  cursor: zoom-out;
+}
+
+.lightbox__post {
+  position: relative;
+  z-index: 1;
+  width: 100%;
   max-width: min(92vw, 400px);
-  padding: 10px;
-  padding-bottom: 12px;
+  max-height: 90dvh;
+  overflow: auto;
   background: #fff;
   border-radius: 4px;
   box-shadow:
-    0 0 0 1px rgba(219, 219, 219, 0.9),
-    0 12px 40px rgba(0, 0, 0, 0.45);
+    0 0 0 1px rgba(219, 219, 219, 0.95),
+    0 16px 48px rgba(0, 0, 0, 0.45);
+}
+
+.lightbox__ig-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.lightbox__ig-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #eee;
+}
+
+.lightbox__ig-user {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.lightbox__photo-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: #111;
 }
 
 .lightbox__img {
   display: block;
-  max-width: 100%;
-  max-height: min(78dvh, 560px);
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  border-radius: 2px;
+}
+
+.lightbox__ig-toolbar {
+  display: flex;
+  gap: 1rem;
+  padding: 0.65rem 0.85rem 0.35rem;
+}
+
+.lightbox__ig-likes {
+  margin: 0;
+  padding: 0 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.lightbox__ig-caption {
+  margin: 0;
+  padding: 0.35rem 0.85rem 0.85rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text);
 }
 
 .lightbox__close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 2;
   width: 2.75rem;
   height: 2.75rem;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.45);
   color: #fff;
   font-size: 1.75rem;
   line-height: 1;
@@ -1090,30 +1327,34 @@ button {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 2;
   width: 2.5rem;
   height: 3.5rem;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.35);
   color: #fff;
   font-size: 2rem;
   line-height: 1;
+  border-radius: 4px;
 }
 
 .lightbox__nav--prev {
-  left: 0.5rem;
+  left: max(0.35rem, env(safe-area-inset-left));
 }
 
 .lightbox__nav--next {
-  right: 0.5rem;
+  right: max(0.35rem, env(safe-area-inset-right));
 }
 
 .lightbox__counter {
   position: absolute;
-  bottom: 1.25rem;
+  bottom: 1rem;
   left: 50%;
   transform: translateX(-50%);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.85rem;
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.82rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 /* Toast */

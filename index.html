@@ -13,7 +13,43 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="app-shell">
+    <!-- 오프닝 봉투 -->
+    <div class="landing" id="landing" aria-hidden="false">
+      <div class="landing__bg"></div>
+      <div class="landing__inner">
+        <p class="landing__studio">Wedding Invitation</p>
+        <button type="button" class="landing__open-btn" id="landing-open" aria-label="청첩장 열기">
+          <div class="landing__envelope" id="landing-envelope">
+            <div class="landing__envelope-back"></div>
+            <div class="landing__envelope-paper">
+              <span class="landing__paper-text" id="landing-paper-text"></span>
+            </div>
+            <div class="landing__envelope-flap" aria-hidden="true"></div>
+            <div class="landing__wax" aria-hidden="true">
+              <span class="landing__wax-letter" id="landing-wax-letter">G</span>
+            </div>
+          </div>
+          <span class="landing__hint">터치하여 청첩장 열기</span>
+        </button>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="music-toggle"
+      id="music-toggle"
+      aria-pressed="false"
+      aria-label="배경음 켜기"
+      title="배경음"
+      hidden
+    >
+      <span class="music-toggle__icon music-toggle__icon--off" aria-hidden="true">🔇</span>
+      <span class="music-toggle__icon music-toggle__icon--on" aria-hidden="true">🔊</span>
+    </button>
+
+    <audio id="bgm-audio" preload="auto" loop></audio>
+
+    <div class="app-shell" id="app-shell">
       <main class="invite" id="top">
         <!-- Hero -->
         <section class="hero" id="hero" aria-label="메인">
@@ -121,27 +157,6 @@
           <div class="nav-apps" id="nav-apps" aria-label="길찾기 앱"></div>
         </section>
 
-        <!-- Instagram style -->
-        <section class="section" id="instagram">
-          <div class="ig-card">
-            <div class="ig-card__head">
-              <img class="ig-card__avatar" id="ig-avatar" src="" alt="" width="40" height="40" />
-              <span class="ig-card__user" id="ig-user"></span>
-            </div>
-            <div class="ig-card__photo">
-              <img id="ig-post" src="" alt="" />
-            </div>
-            <div class="ig-card__toolbar" aria-hidden="true">
-              <span class="ig-icon ig-icon--heart" title="좋아요"></span>
-              <span class="ig-icon ig-icon--comment"></span>
-              <span class="ig-icon ig-icon--share"></span>
-              <span class="ig-icon ig-icon--save"></span>
-            </div>
-            <p class="ig-card__likes" id="ig-likes"></p>
-            <p class="ig-card__caption" id="ig-caption"></p>
-          </div>
-        </section>
-
         <!-- Meal -->
         <section class="section" id="meal">
           <h2 class="section__title" id="meal-title">식사 안내</h2>
@@ -177,12 +192,27 @@
       </div>
     </div>
 
-    <!-- Lightbox -->
+    <!-- Lightbox (갤러리 — 인스타그램 포스트 레이아웃) -->
     <div class="lightbox" id="lightbox" hidden aria-modal="true" role="dialog">
+      <div class="lightbox__dim" id="lightbox-dim" tabindex="-1"></div>
       <button type="button" class="lightbox__close" id="lightbox-close" aria-label="닫기">×</button>
       <button type="button" class="lightbox__nav lightbox__nav--prev" id="lightbox-prev" aria-label="이전">‹</button>
-      <div class="lightbox__frame">
-        <img class="lightbox__img" id="lightbox-img" alt="" />
+      <div class="lightbox__post">
+        <div class="lightbox__ig-head">
+          <img class="lightbox__ig-avatar" id="lightbox-ig-avatar" src="" alt="" width="36" height="36" />
+          <span class="lightbox__ig-user" id="lightbox-ig-user"></span>
+        </div>
+        <div class="lightbox__photo-wrap">
+          <img class="lightbox__img" id="lightbox-img" alt="" />
+        </div>
+        <div class="lightbox__ig-toolbar" aria-hidden="true">
+          <span class="ig-icon ig-icon--heart" title="좋아요"></span>
+          <span class="ig-icon ig-icon--comment"></span>
+          <span class="ig-icon ig-icon--share"></span>
+          <span class="ig-icon ig-icon--save"></span>
+        </div>
+        <p class="lightbox__ig-likes" id="lightbox-ig-likes"></p>
+        <p class="lightbox__ig-caption" id="lightbox-ig-caption"></p>
       </div>
       <button type="button" class="lightbox__nav lightbox__nav--next" id="lightbox-next" aria-label="다음">›</button>
       <div class="lightbox__counter" id="lightbox-counter"></div>
