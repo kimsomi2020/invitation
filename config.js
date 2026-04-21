@@ -39,9 +39,9 @@ window.INVITATION_CONFIG = {
     brideSide: {
       label: "신부측",
       people: [
-        { name: "김홍득", role: "신부 아버지", phone: "010-0000-0011" },
-        { name: "구보 나미에", role: "신부 어머니", phone: "010-0000-0012" },
-        { name: "김소미", role: "신부", phone: "010-0000-0013" },
+        { name: "김홍득", role: "신부 아버지", phone: "010-7572-1583" },
+        { name: "구보 나미에", role: "신부 어머니", phone: "010-9415-1583" },
+        { name: "김소미", role: "신부", phone: "010-4244-1583" },
       ],
     },
   },

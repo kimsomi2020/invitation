@@ -290,7 +290,7 @@ padding: 0 0 5.5rem;
 
 .hero__media {
   position: relative;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 3 / 4.6;
   overflow: hidden;
   background: #ccc;
 }
@@ -315,7 +315,7 @@ padding: 0 0 5.5rem;
 .hero__float-title {
   position: absolute;
   left: 50%;
-  top: clamp(1.75rem, 6vw, 2.5rem);
+  top: clamp(27.75rem, 6vw, 2.5rem);
   transform: translateX(-50%);
   width: 92%;
   margin: 0;
@@ -404,7 +404,7 @@ padding: 0 0 5.5rem;
 
 /* Sections */
 .section {
-  padding: 2.5rem 1.35rem 2.75rem;
+  padding: 4.5rem 1.35rem 4.75rem;
 }
 
 .section--cream {
@@ -1136,8 +1136,8 @@ width: 100%;
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: min(92vw, 400px);
-  max-height: 90dvh;
+  max-width: min(92vw, 470px);
+  max-height: 100dvh;
   overflow: auto;
   background: #fff;
   border-radius: 4px;
@@ -1170,8 +1170,8 @@ width: 100%;
 .lightbox__photo-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
-  background: #111;
+  aspect-ratio: 0.95;
+  background: #ffffff;
 }
 
 .lightbox__img {
@@ -1284,25 +1284,25 @@ height: 2.25rem;
 background: rgba(255, 255, 255, 0.18);
 font-size: 1.6rem;
   line-height: 1;
-color: #d8e08f;
+color: #424339;
 }
 
 .modal__body {
-padding: 0.65rem 1rem 1.35rem;
+padding: 1.2rem 1.2rem 1.2rem;
 display: grid;
 grid-template-columns: 1fr 1fr;
 gap: 0.95rem;
-background: linear-gradient(160deg, #4e5440 0%, #545b45 100%);
+background: linear-gradient(160deg, #f3f3f1 0%, #f3f3f1 100%);
 color: #fff;
 border-radius: 16px 16px 0 0;
 }
 
 .contact-side__label {
 margin: 0 0 0.85rem;
-font-size: 1.45rem;
+font-size: 1.00rem;
   font-weight: 700;
 letter-spacing: 0.01em;
-color: #dbe68b;
+color: #424339;
 text-align: center;
 }
 
@@ -1333,13 +1333,15 @@ gap: 0.08rem;
 }
 
 .contact-list__name {
-font-weight: 700;
-font-size: 1.08rem;
+font-weight: 600;
+font-size: 0.9rem;
+color: #222;
+font-family: "Nanum Myeongjo", serif;
 }
 
 .contact-list__role {
 font-size: 0.82rem;
-color: rgba(255, 255, 255, 0.72);
+color: rgba(0, 0, 0, 0.72);
 }
 
 .contact-list__actions {
