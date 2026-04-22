@@ -169,12 +169,10 @@
                   <a class="contact-list__icon-btn" href="tel:${String(p.phone).replace(/[^0-9+]/g, "")}" aria-label="${
                     p.name
                   }에게 전화">☎</a>
-                  <a class="contact-list__icon-btn" href="mailto:?subject=${encodeURIComponent(
-                    "결혼식 문의"
-                  )}&body=${encodeURIComponent(`${p.name}님께 문의드립니다.`)}" aria-label="${p.name}에게 메일">✉</a>
+    
                   <a class="contact-list__icon-btn" href="sms:${String(p.phone).replace(/[^0-9+]/g, "")}" aria-label="${
                     p.name
-                  }에게 문자">●</a>
+                  }에게 문자">✉</a>
                 </div>
               </li>
             `

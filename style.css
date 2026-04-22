@@ -318,7 +318,7 @@ padding: 0 0 5.5rem;
 .hero__float-title {
   position: absolute;
   left: 50%;
-  top: clamp(28.75rem, 6vw, 2.5rem);
+  top: clamp(23.75rem, 6vw, 2.5rem);
   transform: translateX(-50%);
   width: 92%;
   margin: 0;
@@ -554,6 +554,10 @@ padding: 0 0 5.5rem;
   line-height: 2;
   color: var(--text);
 }
+.greeting::first-letter {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
 
 .names-block {
   margin-top: 2rem;
@@ -575,7 +579,7 @@ padding: 0 0 5.5rem;
   align-items: start;
   max-width: 22rem;
   margin: 0 auto;
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   line-height: 1.65;
 }
 
@@ -602,7 +606,7 @@ padding: 0 0 5.5rem;
   gap: clamp(1rem, 5vw, 2.25rem);
   margin-top: 1.15rem;
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
 }
 
