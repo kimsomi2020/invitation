@@ -160,16 +160,21 @@
                 (p) => `
               <li class="contact-list__item">
                 <div class="contact-list__who">
+                <div>
                   <span class="contact-list__role">${p.role}</span>
+                  <div>
                   <span class="contact-list__name">${p.name}</span>
                 </div>
                 <div class="contact-list__actions">
                   <a class="contact-list__icon-btn" href="tel:${String(p.phone).replace(/[^0-9+]/g, "")}" aria-label="${
                     p.name
-                  }에게 전화">📞</a>
+                  }에게 전화">☎</a>
+                  <a class="contact-list__icon-btn" href="mailto:?subject=${encodeURIComponent(
+                    "결혼식 문의"
+                  )}&body=${encodeURIComponent(`${p.name}님께 문의드립니다.`)}" aria-label="${p.name}에게 메일">✉</a>
                   <a class="contact-list__icon-btn" href="sms:${String(p.phone).replace(/[^0-9+]/g, "")}" aria-label="${
                     p.name
-                  }에게 문자">💬</a>
+                  }에게 문자">●</a>
                 </div>
               </li>
             `
@@ -234,7 +239,20 @@
     const t = document.getElementById("hero-title");
     const s = document.getElementById("hero-subtitle");
     const v = document.getElementById("hero-venue");
-    if (t) t.textContent = h.title;
+    if (t) {
+      t.textContent = "";
+      t.classList.add("hero__float-title--typing");
+      const text = h.title || "";
+      let idx = 0;
+      const timer = setInterval(() => {
+        idx += 1;
+        t.textContent = text.slice(0, idx);
+        if (idx >= text.length) {
+          clearInterval(timer);
+          setTimeout(() => t.classList.remove("hero__float-title--typing"), 900);
+        }
+      }, 140);
+    }
     if (s) s.textContent = h.subtitle;
     if (v) v.textContent = h.venueLine;
   }
@@ -561,21 +579,37 @@
       document.body.classList.toggle("font-zoom", next);
       if (!zoomBtn) return;
       zoomBtn.setAttribute("aria-pressed", next ? "true" : "false");
-      zoomBtn.textContent = next ? "기본 크기로 보기" : "글자 크게 보기";
+      zoomBtn.textContent = next ? "가- 기본 글씨" : "가+ 큰 글씨";
     }
 
     if (zoomBtn) zoomBtn.addEventListener("click", toggleZoom);
 
     if (!src) {
+      btn.hidden = true;
       if (bottomBar) bottomBar.hidden = false;
       window.__revealMusicButton = () => {};
       return;
     }
     audio.src = src;
+    btn.hidden = false;
     if (bottomBar) bottomBar.hidden = false;
 
+    btn.addEventListener("click", async () => {
+      if (audio.paused) {
+        try {
+          await audio.play();
+          btn.classList.add("is-playing");
+          btn.setAttribute("aria-pressed", "true");
+        } catch (e) {}
+      } else {
+        audio.pause();
+        btn.classList.remove("is-playing");
+        btn.setAttribute("aria-pressed", "false");
+      }
+    });
+
     window.__revealMusicButton = () => {
-      btn.hidden = true;
+      btn.hidden = false;
     };
   }
 
@@ -611,12 +645,72 @@
     document.body.classList.add("landing-active");
   }
 
-  function renderMeal() {
-    const m = cfg.meal;
-    document.getElementById("meal-title").textContent = m.title;
-    document.getElementById("meal-img").src = resolveImage(m.image);
-    document.getElementById("meal-img").alt = m.title;
-    document.getElementById("meal-text").textContent = m.text;
+  function renderGuide() {
+    const guide = cfg.guide;
+    if (!guide || !Array.isArray(guide.tabs) || !guide.tabs.length) return;
+    const title = document.getElementById("guide-title");
+    const tabsEl = document.getElementById("guide-tabs");
+    const panelWrap = document.getElementById("guide-panel-wrap");
+    if (!tabsEl || !panelWrap) return;
+    if (title) title.textContent = guide.title || "안내";
+
+    tabsEl.innerHTML = guide.tabs
+      .map(
+        (tab, i) =>
+          `<button type="button" class="guide__tab" role="tab" aria-selected="${
+            i === 0 ? "true" : "false"
+          }" data-guide-tab="${i}">${tab.label}</button>`
+      )
+      .join("");
+    panelWrap.innerHTML = guide.tabs
+      .map((tab) => `<article class="guide__panel"><h3>${tab.heading}</h3><p>${tab.text}</p></article>`)
+      .join("");
+
+    function selectTab(index) {
+      tabsEl.querySelectorAll(".guide__tab").forEach((btn, i) => {
+        btn.setAttribute("aria-selected", i === index ? "true" : "false");
+      });
+      panelWrap.style.transform = `translateX(-${index * (100 / guide.tabs.length)}%)`;
+    }
+
+    tabsEl.addEventListener("click", (e) => {
+      const btn = e.target.closest(".guide__tab");
+      if (!btn) return;
+      selectTab(Number(btn.dataset.guideTab || 0));
+    });
+
+    selectTab(0);
+  }
+
+  function renderFinalNote() {
+    const n = cfg.finalNote;
+    if (!n) return;
+    const img = document.getElementById("final-note-img");
+    const text = document.getElementById("final-note-text");
+    if (img) {
+      img.src = resolveImage(n.image);
+      img.alt = "마지막 안내 이미지";
+    }
+    if (text) text.textContent = n.text || "";
+  }
+
+  function lockZoomInteractions() {
+    document.addEventListener(
+      "wheel",
+      (e) => {
+        if (e.ctrlKey) e.preventDefault();
+      },
+      { passive: false }
+    );
+    document.addEventListener(
+      "touchmove",
+      (e) => {
+        if (e.touches && e.touches.length > 1) e.preventDefault();
+      },
+      { passive: false }
+    );
+    document.addEventListener("gesturestart", (e) => e.preventDefault());
+    document.addEventListener("gesturechange", (e) => e.preventDefault());
   }
 
   function renderAccounts() {
@@ -919,32 +1013,7 @@
     });
   }
 
-// 2. 탭 전환 및 슬라이드 효과
-function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    
-    // 모든 탭 내용 숨기기
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].classList.remove("active");
-      tabcontent[i].style.display = "none";
-    }
-  
-    // 모든 버튼 비활성화
-    tablinks = document.getElementsByClassName("tab-link");
-    for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-  
-    // 클릭한 탭만 보여주기
-    document.getElementById(tabName).style.display = "block";
-    setTimeout(() => {
-      document.getElementById(tabName).classList.add("active");
-    }, 10);
-    evt.currentTarget.className += " active";
-  }
-  
-
+  lockZoomInteractions();
   renderHero();
   renderGreeting();
   renderFamilyContactModal();
@@ -958,8 +1027,9 @@ function openTab(evt, tabName) {
   initMusic();
   initLanding();
   renderLocation();
-  renderMeal();
+  renderGuide();
   renderAccounts();
+  renderFinalNote();
   renderFooter();
   bindHeroButtons();
   initGuestbook();

@@ -2,14 +2,27 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
     <title>모바일 청첩장</title>
+  
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+    <!-- ⭐ 폰트 추가된 최종 버전 -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    href="https://fonts.googleapis.com/css2?
+    family=Nanum+Myeongjo:wght@400;600;700&
+    family=Noto+Sans+KR:wght@300;400;500;600&
+    family=Nanum+Pen+Script&
+    family=Poor+Story&
+    family=Orbit&
+    display=swap"
+    rel="stylesheet"
+  />
+  
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -34,20 +47,20 @@
       </div>
     </div>
 
-    <button
-      type="button"
-      class="music-toggle"
-      id="music-toggle"
-      aria-pressed="false"
-      aria-label="배경음 켜기"
-      title="배경음"
-      hidden
-    >
-      <span class="music-toggle__icon music-toggle__icon--off" aria-hidden="true">🔇</span>
-      <span class="music-toggle__icon music-toggle__icon--on" aria-hidden="true">🔊</span>
-    </button>
     <div class="bottom-control" id="bottom-control" hidden>
-      <button type="button" class="bottom-control__btn" id="btn-font-zoom" aria-pressed="false">글자 크게 보기</button>
+      <button type="button" class="bottom-control__btn" id="btn-font-zoom" aria-pressed="false">가+ 큰 글씨</button>
+      <button
+        type="button"
+        class="bottom-control__btn bottom-control__btn--icon music-toggle"
+        id="music-toggle"
+        aria-pressed="false"
+        aria-label="배경음 켜기"
+        title="배경음"
+        hidden
+      >
+        <span class="music-toggle__icon music-toggle__icon--off" aria-hidden="true">🔇</span>
+        <span class="music-toggle__icon music-toggle__icon--on" aria-hidden="true">🔊</span>
+      </button>
     </div>
 
     <audio id="bgm-audio" preload="auto" loop></audio>
@@ -73,6 +86,7 @@
         <!-- Greeting -->
         <section class="section section--cream" id="greeting">
           <div class="section__inner greeting" id="greeting-content"></div>
+          <div class="section-divider section-divider--greeting" aria-hidden="true"></div>
           <div class="names-block" id="names-block"></div>
           <div class="names-block__action">
             <button type="button" class="btn-solid" id="btn-family-contact" aria-haspopup="dialog">
@@ -80,6 +94,7 @@
             </button>
           </div>
         </section>
+        <div class="section-divider" aria-hidden="true"></div>
 
         <!-- Profiles -->
         <section class="section" id="profile" style="display: none;">
@@ -130,12 +145,14 @@
           <div class="wedding-day__meta" id="wedding-day-meta"></div>
           <div class="quick-actions" id="quick-actions" aria-label="빠른 기능"></div>
         </section>
+        <div class="section-divider" aria-hidden="true"></div>
 
         <!-- Gallery -->
         <section class="section" id="gallery">
           <h2 class="section__title section__title--gallery">GALLERY</h2>
           <div class="gallery-grid" id="gallery-grid"></div>
         </section>
+        <div class="section-divider" aria-hidden="true"></div>
 
         <!-- Location -->
         <section class="section section--cream" id="location">
@@ -159,21 +176,24 @@
           <div class="direction-list" id="direction-list"></div>
           <div class="nav-apps" id="nav-apps" aria-label="길찾기 앱"></div>
         </section>
+        <div class="section-divider" aria-hidden="true"></div>
 
-        <!-- Meal -->
-        <section class="section" id="meal">
-          <h2 class="section__title" id="meal-title">식사 안내</h2>
-          <div class="meal__photo">
-            <img id="meal-img" src="" alt="" />
+        <!-- Guide -->
+        <section class="section section--cream" id="guide" style="display: none;">
+          <h2 class="section__title" id="guide-title">안내</h2>
+          <div class="guide__tabs" id="guide-tabs" role="tablist" aria-label="안내 탭"></div>
+          <div class="guide__viewport">
+            <div class="guide__panel-wrap" id="guide-panel-wrap"></div>
           </div>
-          <p class="meal__text" id="meal-text"></p>
         </section>
+        <div class="section-divider" aria-hidden="true"></div>
 
         <!-- Accounts -->
         <section class="section section--cream" id="gift">
           <h2 class="section__title" id="accounts-title">마음 전하실 곳</h2>
           <div class="accordion" id="accounts-accordion"></div>
         </section>
+        <div class="section-divider" aria-hidden="true"></div>
 
         <!-- Guestbook -->
         <section class="section guestbook-section" id="guestbook">
@@ -217,6 +237,14 @@
             <div class="guestbook-page-numbers" id="guestbook-page-numbers"></div>
             <button type="button" class="guestbook-page-btn" id="guestbook-next" aria-label="다음 페이지">›</button>
           </div>
+        </section>
+        <div class="section-divider" aria-hidden="true"></div>
+
+        <section class="section final-note" id="final-note">
+          <div class="final-note__photo">
+            <img id="final-note-img" src="" alt="" />
+          </div>
+          <p class="final-note__text" id="final-note-text"></p>
         </section>
 
         <!-- Footer -->

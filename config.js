@@ -14,10 +14,10 @@ window.INVITATION_CONFIG = {
 
   greeting: {
     lines: [
-      "서로가 마주 보며 다져온 사랑을",
-      "이제 함께 한 곳을 향해 걸어가려 합니다.",
-      "저희 두 사람이 사랑의 이름으로 지켜나갈 수 있게",
-      "앞날을 축복해 주시면 감사하겠습니다.",
+      "필연처럼 만난 저희가 여섯 번의 여름을 지나",
+      "선물 같은 결실을 맺으려 합니다.",
+      "소중한 분들의 따뜻한 마음을 평생 간직하며",
+      "미래를 향한 첫 발걸음을 내딛겠습니다.",
     ],
     /** 부모님 이름 두 분 — 사이에 * 로 표시됩니다 */
     groomParents: ["길동균", "마치다 치에꼬"],
@@ -31,9 +31,9 @@ window.INVITATION_CONFIG = {
     groomSide: {
       label: "신랑측",
       people: [
-        { name: "길동균", role: "신랑 아버지", phone: "010-0000-0001" },
-        { name: "마치다 치에꼬", role: "신랑 어머니", phone: "010-0000-0002" },
-        { name: "길필선", role: "신랑", phone: "010-0000-0003" },
+        { name: "길동균", role: "신랑 아버지", phone: "010-3751-7628" },
+        { name: "마치다 치에꼬", role: "신랑 어머니", phone: "010-8200-7628" },
+        { name: "길필선", role: "신랑", phone: "010-8751-7628" },
       ],
     },
     brideSide: {
@@ -94,12 +94,12 @@ window.INVITATION_CONFIG = {
     venueName: "스타시티 아트홀",
     address: "서울특별시 광진구 능동로 110 스타시티영존 5층",
     mapEmbedUrl:
-      "https://maps.google.com/maps?q=%EC%84%9C%EC%9A%B8%ED%8A%B9%EB%B3%84%EC%8B%9C+%EA%B4%91%EC%A7%84%EA%B5%AC+%EB%8A%A5%EB%8F%99%EB%A1%9C+110+%EC%8A%A4%ED%83%80%EC%8B%9C%ED%8B%B0%EC%98%81%EC%A1%B4&z=17&output=embed",
+      "https://www.google.com/maps?q=스타시티아트홀&output=embed",
     lat: 37.5576,
     lng: 127.0795,
     directions: {
       subway: "2·7호선 건대입구역 도보 이용 (역에서 도보 약 5~10분, 출구 안내에 따라 이동)",
-      bus: "건대입구역·스타시티 인근 정류장 하차",
+      bus: "간선 : 240번, 721번, N61번, N62번\n지선 : 2016번, 2222번, 3217번, 3220번, 4212번\n직행 : 102번, 3500번\n공항 : 6013번",
       parking: "스타시티 지하 주차장 이용 (예식장 안내 참고)",
     },
   },
@@ -119,10 +119,28 @@ window.INVITATION_CONFIG = {
     src: "",
   },
 
-  meal: {
-    title: "식사 안내",
-    image: "images/meal.jpg",
-    text: "뷔페 식사는 예식 종료 후 로비에서 안내에 따라 이동해 주세요. 알레르기가 있으시면 사전에 말씀 부탁드립니다.",
+  guide: {
+    title: "안내",
+    tabs: [
+      {
+        key: "meal",
+        label: "식사",
+        heading: "식사 안내",
+        text: "뷔페 식사는 예식 종료 후 로비에서 안내에 따라 이동해 주세요.\n알레르기가 있으시면 사전에 말씀 부탁드립니다.",
+      },
+      {
+        key: "parking",
+        label: "주차",
+        heading: "주차 안내",
+        text: "스타시티 지하 주차장 이용이 가능합니다.\n혼잡 시간대에는 여유 있게 도착해 주세요.",
+      },
+      {
+        key: "etc",
+        label: "기타",
+        heading: "기타 안내",
+        text: "화환은 정중히 사양합니다.\n예식 관련 문의는 연락하기 버튼으로 부탁드립니다.",
+      },
+    ],
   },
 
   accounts: {
@@ -130,20 +148,29 @@ window.INVITATION_CONFIG = {
     groomSide: {
       label: "신랑측",
       banks: [
-        { bank: "국민은행", number: "123456-78-901234", holder: "길필선" },
-        { bank: "신한은행", number: "110-123-456789", holder: "길○○" },
+        { bank: "국민은행", number: "123456-78-901234", holder: "길동균" },
+        { bank: "신한은행", number: "110-123-456789", holder: "마치다 치에꼬" },
+        { bank: "신한은행", number: "110-123-456789", holder: "길필선" },
       ],
     },
     brideSide: {
       label: "신부측",
-      banks: [{ bank: "우리은행", number: "1002-123-456789", holder: "김소미" }],
+      banks: [
+        { bank: "우리은행", number: "1002-123-456789", holder: "김홍득" },
+        { bank: "농협", number: "3333-12-3456789", holder: "김소미" },
+      ],
     },
+  },
+
+  finalNote: {
+    image: "images/final-note.jpg",
+    text: "소중한 걸음 해주셔서 감사합니다.\n좋은 날, 따뜻한 마음으로 뵙겠습니다.",
   },
 
   footer: {
     message: "찾아주셔서 진심으로 감사드립니다.",
-    groomPhone: "010-1234-5678",
-    bridePhone: "010-8765-4321",
+    groomPhone: "010-8751-7628",
+    bridePhone: "010-4244-1583",
   },
 
   useDemoPlaceholders: false,
