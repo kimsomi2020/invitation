@@ -528,11 +528,11 @@
     const d = L.directions;
     document.getElementById("direction-list").innerHTML = `
       <dl>
-        <dt>🚇 지하철</dt>
+        <dt>🚇 지하철
         <dd>${d.subway}</dd>
-        <dt>🚌 버스</dt>
+        <dt>🚌 버스
         <dd>${d.bus}</dd>
-        <dt>🅿 주차</dt>
+        <dt>🅿 주차
         <dd>${d.parking}</dd>
       </dl>
     `;
@@ -550,7 +550,6 @@
     document.getElementById("nav-apps").innerHTML = `
       <a class="nav-app" href="${kakao}" target="_blank" rel="noopener">카카오맵</a>
       <a class="nav-app" href="${naver}" target="_blank" rel="noopener">네이버 지도</a>
-      <a class="nav-app" href="${tmap}" target="_blank" rel="noopener">T map</a>
       <a class="nav-app" href="${google}" target="_blank" rel="noopener">구글 지도</a>
     `;
   }
