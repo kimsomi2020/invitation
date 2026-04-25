@@ -165,15 +165,13 @@
                   <div>
                   <span class="contact-list__name">${p.name}</span>
                 </div>
-                <div class="contact-list__actions">
-                  <a class="contact-list__icon-btn" href="tel:${String(p.phone).replace(/[^0-9+]/g, "")}" aria-label="${
-                    p.name
-                  }에게 전화">☎</a>
-    
-                  <a class="contact-list__icon-btn" href="sms:${String(p.phone).replace(/[^0-9+]/g, "")}" aria-label="${
-                    p.name
-                  }에게 문자">✉</a>
-                </div>
+<a class="contact-list__icon-btn" href="tel:${String(p.phone).replace(/[^0-9+]/g, "")}">
+  <img src="images/phone.png" alt="전화">
+</a>
+
+<a class="contact-list__icon-btn" href="sms:${String(p.phone).replace(/[^0-9+]/g, "")}">
+  <img src="images/message.png" alt="문자">
+</a>
               </li>
             `
               )
@@ -542,9 +540,9 @@
     const lat = L.lat;
     const lng = L.lng;
 
-    const kakao = `https://map.kakao.com/link/map/${nameEnc},${lat},${lng}`;
+    const kakao = `https://kko.to/QxNmYB8T1b`;
     const naver = `https://map.naver.com/v5/search/${addrEnc}`;
-    const google = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    const google = `https://maps.app.goo.gl/M7rYMq6dSnA11WT56`;
     const tmap = `https://tmap.co.kr/tmap3/mobileRoute.jsp?searchKeyword=${addrEnc}`;
 
     document.getElementById("nav-apps").innerHTML = `

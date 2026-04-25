@@ -1299,22 +1299,19 @@ flex: 0 0 3.2rem;
 
 /* 연락하기 모달 본체 최적화 */
 .modal__panel {
-  /* 1. 위치를 화면 정중앙으로 강제 고정 */
   position: fixed !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
 
-  /* 2. 크기 조절: 화면 너비의 90%만 차지하게 */
-  width: 90% !important;
-  max-width: 360px !important; /* 모바일에서 너무 커지지 않게 제한 */
-  
-  /* 3. 높이 조절: 화면 높이의 80%를 넘지 않게 하고, 넘치면 내부 스크롤 생성 */
+  width: 88% !important;
+  max-width: 340px !important;
   max-height: 80vh !important;
-  overflow-y: auto !important; 
-  
-  /* 박스 모델 안정화 */
+
+  overflow-y: auto !important;
   box-sizing: border-box !important;
+
+  border-radius: 18px !important;
 }
 
 /* 모달 내부 스크롤바 숨기기 (선택 사항 - 깔끔한 디자인용) */
@@ -1425,23 +1422,26 @@ display: flex;
 gap: 0.7rem;
 justify-content: center;
 }
-
+/* 아이콘을 감싸는 버튼 스타일 (투명하게) */
 .contact-list__icon-btn {
-width: auto;
-height: auto;
-display: inline-flex;
-align-items: center;
-justify-content: center;
-text-decoration: none;
-font-size: 1.3rem;
-background: transparent;
-color: #111;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 30px !important;
+  height: 30px !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin-left: 8px;
+  margin-right: 8px;
+  cursor: pointer;
 }
 
-.contact-list__icon-btn:hover {
-opacity: 0.72;
+/* 터치 시 피드백 */
+.contact-list__icon-btn:active {
+  opacity: 0.6;
+  transform: scale(0.9);
 }
-
 @media (min-width: 480px) {
   .modal {
     align-items: center;
