@@ -1839,3 +1839,10 @@ box-shadow: inset 0 0 0 1px #2f2f2f;
 .direction-list {
   white-space: pre-line;
 }
+@font-face {
+  font-family: "Orbit";
+  src: url("/fonts/orbit.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
