@@ -2,7 +2,7 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes, maximum-scale=3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0, user-scalable=yes, viewport-fit=cover">
     <meta property="og:title" content="길필선 ❤️ 김소미 결혼식에 초대합니다">
 <meta property="og:description" content="저희의 소중한 날에 함께해주세요">
 <meta property="og:image" content="https://kimsomi2020.github.io/invitation/images/pin.png">
@@ -280,5 +280,16 @@
 
     <script src="config.js"></script>
     <script src="script.js"></script>
+    <script>
+      let lastTouchEnd = 0;
+      
+      document.addEventListener('touchend', function (event) {
+        const now = new Date().getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+      </script>
   </body>
 </html>
