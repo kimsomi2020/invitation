@@ -168,7 +168,6 @@
 <a class="contact-list__icon-btn" href="tel:${String(p.phone).replace(/[^0-9+]/g, "")}">
   <img src="images/phone.png" alt="전화">
 </a>
-
 <a class="contact-list__icon-btn" href="sms:${String(p.phone).replace(/[^0-9+]/g, "")}">
   <img src="images/message.png" alt="문자">
 </a>

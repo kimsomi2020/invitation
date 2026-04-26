@@ -148,23 +148,23 @@ window.INVITATION_CONFIG = {
     groomSide: {
       label: "신랑측",
       banks: [
-        { bank: "국민은행", number: "123456-78-901234", holder: "길동균" },
-        { bank: "신한은행", number: "110-123-456789", holder: "마치다 치에꼬" },
-        { bank: "신한은행", number: "110-123-456789", holder: "길필선" },
+        { bank: "농협", number: "203049-52-024406", holder: "길동균" },
+        { bank: "우리은행", number: "1002-745-853550", holder: "마치다 치에꼬" },
+        { bank: "우리은행", number: "1002-345-182228", holder: "길필선" },
       ],
     },
     brideSide: {
       label: "신부측",
       banks: [
-        { bank: "우리은행", number: "1002-123-456789", holder: "김홍득" },
-        { bank: "농협", number: "3333-12-3456789", holder: "김소미" },
+        { bank: "우리은행", number: "1002-459-596777", holder: "김홍득" },
+        { bank: "농협", number: "312-0065-1337-51", holder: "김소미" },
       ],
     },
   },
 
   finalNote: {
     image: "images/final-note.jpg",
-    text: "소중한 걸음 해주셔서 감사합니다.\n좋은 날, 따뜻한 마음으로 뵙겠습니다.",
+    text: "소중한 걸음 해주셔서 감사합니다.\n",
   },
 
   footer: {
