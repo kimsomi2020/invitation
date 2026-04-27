@@ -12,6 +12,38 @@ window.INVITATION_CONFIG = {
     venueLine: "스타시티 아트홀",
   },
 
+  fonts: {
+    sans: '"Noto Sans KR", system-ui, sans-serif',
+    serif: '"Nanum Myeongjo", serif',
+    hero: '"Orbit", "Nanum Myeongjo", serif',
+  },
+
+  heroEffects: {
+    enabled: true,
+    petalCount: 6,
+  },
+
+  surprisePhotos: {
+    enabled: true,
+    hotspots: [
+      { section: "hero", x: 3, y: 26, size: 18, label: "숨은 사진 1", icon: "images/hidden-1.png" },
+      { section: "hero", x: 97, y: 62, size: 18, label: "숨은 사진 2", icon: "images/hidden-2.png" },
+      { section: "greeting", x: 3, y: 78, size: 18, label: "숨은 사진 3", icon: "images/hidden-3.png" },
+      { section: "wedding-day", x: 97, y: 22, size: 18, label: "숨은 사진 4", icon: "images/hidden-4.png" },
+      { section: "gallery", x: 3, y: 64, size: 18, label: "숨은 사진 5", icon: "images/hidden-1.png" },
+      { section: "location", x: 97, y: 70, size: 18, label: "숨은 사진 6", icon: "images/hidden-2.png" },
+      { section: "gift", x: 3, y: 26, size: 18, label: "숨은 사진 7", icon: "images/hidden-3.png" },
+      { section: "final-note", x: 97, y: 58, size: 18, label: "숨은 사진 8", icon: "images/hidden-4.png" },
+    ],
+    popupImages: [
+      "images/surprise-01.jpg",
+      "images/surprise-02.jpg",
+      "images/surprise-03.jpg",
+      "images/surprise-04.jpg",
+    ],
+    sounds: ["audio/dingdong.mp3", "audio/laugh.mp3"],
+  },
+
   greeting: {
     lines: [
       "필연처럼 만난 저희가 여섯 번의 여름을 지나",

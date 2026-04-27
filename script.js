@@ -114,7 +114,15 @@
     const g = cfg.greeting;
     const greetEl = document.getElementById("greeting-content");
     if (greetEl) {
-      greetEl.innerHTML = g.lines.map((line) => `<p>${line}</p>`).join("");
+      greetEl.innerHTML = g.lines
+        .map((line) => {
+          const safeLine = String(line || "");
+          if (!safeLine) return "<p></p>";
+          const first = safeLine.charAt(0);
+          const rest = safeLine.slice(1);
+          return `<p><span class="greeting__initial">${first}</span>${rest}</p>`;
+        })
+        .join("");
     }
     const names = document.getElementById("names-block");
     if (names) {
@@ -250,6 +258,33 @@
     }
     if (s) s.textContent = h.subtitle;
     if (v) v.textContent = h.venueLine;
+  }
+
+  function initHeroFlowerRain() {
+    const hero = document.getElementById("hero");
+    if (!hero) return;
+    const opts = cfg.heroEffects || {};
+    if (!opts.enabled) return;
+    const count = Math.max(4, Math.min(12, Number(opts.petalCount) || 7));
+    const petals = ["✽"];
+    const layer = document.createElement("div");
+    layer.className = "hero-flower-rain";
+    layer.style.setProperty("--fall-distance", `${hero.offsetHeight + 120}px`);
+    for (let i = 0; i < count; i++) {
+      const node = document.createElement("span");
+      node.className = "hero-flower-rain__petal";
+      node.textContent = petals[i % petals.length];
+      const left = Math.random() * 100;
+      const delay = Math.random() * 12;
+      const duration = 11 + Math.random() * 8;
+      node.style.left = `${left}%`;
+      node.style.animationDelay = `${delay}s`;
+      node.style.animationDuration = `${duration}s`;
+      node.style.opacity = `${0.2 + Math.random() * 0.3}`;
+      node.style.setProperty("--drift-x", `${-12 + Math.random() * 24}px`);
+      layer.appendChild(node);
+    }
+    hero.appendChild(layer);
   }
 
   function renderMapPin() {
@@ -688,23 +723,78 @@
     if (text) text.textContent = n.text || "";
   }
 
-  function lockZoomInteractions() {
-    document.addEventListener(
-      "wheel",
-      (e) => {
-        if (e.ctrlKey) e.preventDefault();
-      },
-      { passive: false }
-    );
-    document.addEventListener(
-      "touchmove",
-      (e) => {
-        if (e.touches && e.touches.length > 1) e.preventDefault();
-      },
-      { passive: false }
-    );
-    document.addEventListener("gesturestart", (e) => e.preventDefault());
-    document.addEventListener("gesturechange", (e) => e.preventDefault());
+  function applyCustomFonts() {
+    const fonts = cfg.fonts || {};
+    if (fonts.sans) document.documentElement.style.setProperty("--font-sans", fonts.sans);
+    if (fonts.serif) document.documentElement.style.setProperty("--font-serif", fonts.serif);
+    if (fonts.hero) document.documentElement.style.setProperty("--font-orbit", fonts.hero);
+  }
+
+  function initSurprisePhotos() {
+    const surprise = cfg.surprisePhotos || {};
+    if (!surprise.enabled) return;
+    const modal = document.getElementById("surprise-modal");
+    const dim = document.getElementById("surprise-dim");
+    const closeBtn = document.getElementById("surprise-close");
+    const img = document.getElementById("surprise-img");
+    if (!modal || !dim || !closeBtn || !img) return;
+
+    const hotspots = Array.isArray(surprise.hotspots) ? surprise.hotspots : [];
+    const photos = Array.isArray(surprise.popupImages) ? surprise.popupImages : [];
+    if (!hotspots.length || !photos.length) return;
+
+    const soundPaths = Array.isArray(surprise.sounds) ? surprise.sounds : [];
+    function playSound() {
+      if (!soundPaths.length) return;
+      const sound = soundPaths[Math.floor(Math.random() * soundPaths.length)];
+      const audio = new Audio(sound);
+      audio.volume = 0.85;
+      audio.play().catch(() => {});
+    }
+
+    function openRandomPhoto() {
+      const photo = photos[Math.floor(Math.random() * photos.length)];
+      img.src = resolveImage(photo);
+      modal.hidden = false;
+      document.body.style.overflow = "hidden";
+      playSound();
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      document.body.style.overflow = "";
+      img.removeAttribute("src");
+    }
+
+    hotspots.forEach((spot, idx) => {
+      const parentId = spot.section || "hero";
+      const parent = document.getElementById(parentId);
+      if (!parent) return;
+      if (window.getComputedStyle(parent).position === "static") {
+        parent.classList.add("hidden-hotspot-anchor");
+      }
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "hidden-hotspot";
+      btn.setAttribute("aria-label", spot.label || `숨은 요소 ${idx + 1}`);
+      btn.style.left = `${spot.x}%`;
+      btn.style.top = `${spot.y}%`;
+      btn.style.width = `${spot.size || 28}px`;
+      btn.style.height = `${spot.size || 28}px`;
+      if (spot.icon) {
+        btn.style.backgroundImage = `url("${spot.icon}")`;
+      } else {
+        btn.textContent = "•";
+      }
+      btn.addEventListener("click", openRandomPhoto);
+      parent.appendChild(btn);
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+    dim.addEventListener("click", closeModal);
+    document.addEventListener("keydown", (e) => {
+      if (!modal.hidden && e.key === "Escape") closeModal();
+    });
   }
 
   function renderAccounts() {
@@ -1007,8 +1097,9 @@
     });
   }
 
-  lockZoomInteractions();
+  applyCustomFonts();
   renderHero();
+  initHeroFlowerRain();
   renderGreeting();
   renderFamilyContactModal();
   renderMapPin();
@@ -1027,4 +1118,5 @@
   renderFooter();
   bindHeroButtons();
   initGuestbook();
+  initSurprisePhotos();
 })();
