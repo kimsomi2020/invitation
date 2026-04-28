@@ -779,8 +779,8 @@
       btn.setAttribute("aria-label", spot.label || `숨은 요소 ${idx + 1}`);
       btn.style.left = `${spot.x}%`;
       btn.style.top = `${spot.y}%`;
-      btn.style.width = `${spot.size || 28}px`;
-      btn.style.height = `${spot.size || 28}px`;
+      btn.style.width = `${spot.width || spot.size || 28}px`;
+      btn.style.height = `${spot.height || spot.size || 28}px`;
       if (spot.icon) {
         btn.style.backgroundImage = `url("${spot.icon}")`;
       } else {
