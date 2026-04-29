@@ -733,16 +733,20 @@
   function initSurprisePhotos() {
     const surprise = cfg.surprisePhotos || {};
     if (!surprise.enabled) return;
+  
     const modal = document.getElementById("surprise-modal");
     const dim = document.getElementById("surprise-dim");
     const closeBtn = document.getElementById("surprise-close");
     const img = document.getElementById("surprise-img");
+    
     if (!modal || !dim || !closeBtn || !img) return;
-
+  
     const hotspots = Array.isArray(surprise.hotspots) ? surprise.hotspots : [];
-    const photos = Array.isArray(surprise.popupImages) ? surprise.popupImages : [];
-    if (!hotspots.length || !photos.length) return;
-
+  
+    // [중요!] 여기서 photos.length 체크를 삭제했습니다. 
+    // 이제 popupImages 배열이 없어도 hotspots만 있으면 정상 작동합니다.
+    if (!hotspots.length) return;
+  
     const soundPaths = Array.isArray(surprise.sounds) ? surprise.sounds : [];
     function playSound() {
       if (!soundPaths.length) return;
@@ -751,45 +755,56 @@
       audio.volume = 0.85;
       audio.play().catch(() => {});
     }
-
-    function openRandomPhoto() {
-      const photo = photos[Math.floor(Math.random() * photos.length)];
-      img.src = resolveImage(photo);
+  
+    // 전달받은 특정 사진 경로를 팝업창에 띄우는 함수
+    function openTargetPhoto(photoPath) {
+      if (!photoPath) return; 
+      img.src = resolveImage(photoPath); // 이미지 경로 설정
       modal.hidden = false;
       document.body.style.overflow = "hidden";
       playSound();
     }
-
+  
     function closeModal() {
       modal.hidden = true;
       document.body.style.overflow = "";
       img.removeAttribute("src");
     }
-
+  
     hotspots.forEach((spot, idx) => {
       const parentId = spot.section || "hero";
       const parent = document.getElementById(parentId);
       if (!parent) return;
+  
       if (window.getComputedStyle(parent).position === "static") {
         parent.classList.add("hidden-hotspot-anchor");
       }
+  
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "hidden-hotspot";
       btn.setAttribute("aria-label", spot.label || `숨은 요소 ${idx + 1}`);
+  
+      // 위치 및 크기 (가로/세로 독립 적용)
       btn.style.left = `${spot.x}%`;
       btn.style.top = `${spot.y}%`;
       btn.style.width = `${spot.width || spot.size || 28}px`;
       btn.style.height = `${spot.height || spot.size || 28}px`;
+  
       if (spot.icon) {
         btn.style.backgroundImage = `url("${spot.icon}")`;
       } else {
         btn.textContent = "•";
       }
-      btn.addEventListener("click", openRandomPhoto);
+  
+      // ⭐ 클릭 시 랜덤이 아닌 spot.content에 지정된 사진을 엽니다.
+      btn.addEventListener("click", () => {
+        openTargetPhoto(spot.content); 
+      });
+  
       parent.appendChild(btn);
     });
-
+  
     closeBtn.addEventListener("click", closeModal);
     dim.addEventListener("click", closeModal);
     document.addEventListener("keydown", (e) => {
