@@ -531,6 +531,11 @@
     lb.addEventListener(
       "touchstart",
       (e) => {
+        // 손가락이 2개 이상이면(확대 제스처 등) 로직을 실행하지 않음
+        if (e.touches.length > 1) {
+          touchStartX = 0;
+          return;
+        }
         touchStartX = e.changedTouches[0].screenX;
       },
       { passive: true }
@@ -538,10 +543,15 @@
     lb.addEventListener(
       "touchend",
       (e) => {
+        // 확대 중이었거나, 손가락이 아직 화면에 남아있다면(두 손가락 중 하나를 뗀 경우 등) 무시
+        if (touchStartX === 0 || e.touches.length > 0) return;
+
         const dx = e.changedTouches[0].screenX - touchStartX;
         if (Math.abs(dx) < 40) return;
         if (dx < 0) next.click();
         else prev.click();
+
+        touchStartX = 0; // 초기화
       },
       { passive: true }
     );
