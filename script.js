@@ -46,6 +46,78 @@
     return path;
   }
 
+  // WebAudio 기반 공용 오디오 (파일이 없어도 동작)
+  let audioCtx = null;
+  let synthBgm = null;
+  function ensureAudioContext() {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    if (!audioCtx) audioCtx = new Ctx();
+    if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+    return audioCtx;
+  }
+
+  function startSynthBgm() {
+    const ctx = ensureAudioContext();
+    if (!ctx || synthBgm) return;
+    const master = ctx.createGain();
+    master.gain.value = 0.055;
+    master.connect(ctx.destination);
+
+    const low = ctx.createOscillator();
+    low.type = "sine";
+    low.frequency.value = 196; // G3
+    const lowGain = ctx.createGain();
+    lowGain.gain.value = 0.55;
+    low.connect(lowGain).connect(master);
+
+    const high = ctx.createOscillator();
+    high.type = "triangle";
+    high.frequency.value = 293.66; // D4
+    const highGain = ctx.createGain();
+    highGain.gain.value = 0.28;
+    high.connect(highGain).connect(master);
+
+    const lfo = ctx.createOscillator();
+    lfo.type = "sine";
+    lfo.frequency.value = 0.08;
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 6;
+    lfo.connect(lfoGain).connect(low.frequency);
+
+    [low, high, lfo].forEach((node) => node.start());
+    synthBgm = { master, nodes: [low, high, lfo] };
+  }
+
+  function stopSynthBgm() {
+    if (!synthBgm) return;
+    const now = audioCtx ? audioCtx.currentTime : 0;
+    try {
+      synthBgm.master.gain.setTargetAtTime(0.0001, now, 0.25);
+      synthBgm.nodes.forEach((node) => node.stop(now + 0.35));
+    } catch (e) {}
+    synthBgm = null;
+  }
+
+  function playChime(volume = 0.18) {
+    const ctx = ensureAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(volume, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.48);
+    gain.connect(ctx.destination);
+
+    const osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(1174.66, now + 0.23);
+    osc.connect(gain);
+    osc.start(now);
+    osc.stop(now + 0.5);
+  }
+
   function scrollToId(id) {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -598,9 +670,18 @@
 
   function tryPlayBgm() {
     const audio = document.getElementById("bgm-audio");
-    if (!audio || !audio.src) return;
-    audio.muted = false;
-    audio.play().catch(() => {});
+    const hasFile = Boolean(audio && audio.src);
+    if (hasFile) {
+      audio.muted = false;
+      audio.play().catch(() => {});
+      return;
+    }
+    startSynthBgm();
+    const btn = document.getElementById("music-toggle");
+    if (btn) {
+      btn.classList.add("is-playing");
+      btn.setAttribute("aria-pressed", "true");
+    }
   }
 
   function initMusic() {
@@ -623,27 +704,35 @@
 
     if (zoomBtn) zoomBtn.addEventListener("click", toggleZoom);
 
-    if (!src) {
-      btn.hidden = true;
-      if (bottomBar) bottomBar.hidden = false;
-      window.__revealMusicButton = () => {};
-      return;
-    }
-    audio.src = src;
+    const useAudioFile = Boolean(src);
+    if (useAudioFile) audio.src = src;
     btn.hidden = false;
     if (bottomBar) bottomBar.hidden = false;
 
     btn.addEventListener("click", async () => {
-      if (audio.paused) {
-        try {
-          await audio.play();
+      if (useAudioFile) {
+        if (audio.paused) {
+          try {
+            await audio.play();
+            btn.classList.add("is-playing");
+            btn.setAttribute("aria-pressed", "true");
+          } catch (e) {}
+        } else {
+          audio.pause();
+          btn.classList.remove("is-playing");
+          btn.setAttribute("aria-pressed", "false");
+        }
+      } else {
+        const on = btn.getAttribute("aria-pressed") === "true";
+        if (on) {
+          stopSynthBgm();
+          btn.classList.remove("is-playing");
+          btn.setAttribute("aria-pressed", "false");
+        } else {
+          startSynthBgm();
           btn.classList.add("is-playing");
           btn.setAttribute("aria-pressed", "true");
-        } catch (e) {}
-      } else {
-        audio.pause();
-        btn.classList.remove("is-playing");
-        btn.setAttribute("aria-pressed", "false");
+        }
       }
     });
 
@@ -759,11 +848,14 @@
   
     const soundPaths = Array.isArray(surprise.sounds) ? surprise.sounds : [];
     function playSound() {
-      if (!soundPaths.length) return;
+      if (!soundPaths.length) {
+        playChime();
+        return;
+      }
       const sound = soundPaths[Math.floor(Math.random() * soundPaths.length)];
       const audio = new Audio(sound);
       audio.volume = 0.85;
-      audio.play().catch(() => {});
+      audio.play().catch(() => playChime());
     }
   
     // 전달받은 특정 사진 경로를 팝업창에 띄우는 함수

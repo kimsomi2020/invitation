@@ -30,7 +30,7 @@ window.INVITATION_CONFIG = {
         content: "images/surprise-01.jpg"},
       { section: "wedding-day", x: 3, y: 50, size: 22, label: "숨은 사진 2", icon: "images/hidden-2.png",
         content: "images/surprise-02.jpg" },
-      { section: "", x: 3, y: 78, size: 18, label: "숨은 사진 3", icon: "images/hidden-3.png",
+      { section: "wedding-day", x: 88, y: 90, size: 18, label: "숨은 사진 3", icon: "images/hidden-3.png",
         content: "images/surprise-03.jpg" },
       { section: "wedding-day", x: 85, y: 0, width: 50, height: 30, label: "숨은 사진 4", icon: "images/hidden-4.png",
         content: "images/surprise-04.jpg" },
