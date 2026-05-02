@@ -2,36 +2,26 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes, viewport-fit=cover">
-    <meta property="og:title" content="길필선 ❤️ 김소미 결혼식에 초대합니다">
-<meta property="og:description" content="저희의 소중한 날에 함께해주세요">
-<meta property="og:image" content="https://kimsomi2020.github.io/invitation/images/pin.png">
-<meta property="og:url" content="https://kimsomi2020.github.io/invitation/>
-<meta property="og:type" content="website">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes, viewport-fit=cover"
+    />
+    <meta property="og:title" content="길필선 ❤️ 김소미 결혼식에 초대합니다" />
+    <meta property="og:description" content="저희의 소중한 날에 함께해주세요" />
+    <meta property="og:image" content="https://kimsomi2020.github.io/invitation/images/final-note.jpg" />
+    <meta property="og:url" content="https://kimsomi2020.github.io/invitation/" />
+    <meta property="og:type" content="website" />
     <title>모바일 청첩장</title>
-  
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  
-    <!-- ⭐ 폰트 추가된 최종 버전 -->
     <link
-    href="https://fonts.googleapis.com/css2?
-    family=Nanum+Myeongjo:wght@400;600;700&
-    family=Noto+Sans+KR:wght@300;400;500;600&
-    family=Nanum+Pen+Script&
-    family=Poor+Story&
-    family=Orbit&
-    display=swap"
-    rel="stylesheet"
-  />
-  
+      href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- 오프닝 봉투 삭제 -->
-    
-
-    <div class="bottom-control" id="bottom-control" hidden>
+    <div class="bottom-control" id="bottom-control">
       <button type="button" class="bottom-control__btn" id="btn-font-zoom" aria-pressed="false">가+ 큰 글씨</button>
       <button
         type="button"
@@ -47,11 +37,10 @@
       </button>
     </div>
 
-    <audio id="bgm-audio" preload="auto" loop></audio>
+    <audio id="bgm-audio" preload="metadata" loop></audio>
 
     <div class="app-shell" id="app-shell">
       <main class="invite" id="top">
-        <!-- Hero -->
         <section class="hero" id="hero" aria-label="메인">
           <div class="hero__media">
             <img class="hero__img" src="" alt="" width="1200" height="1600" />
@@ -67,60 +56,28 @@
           </div>
         </section>
 
-        <!-- Greeting -->
         <section class="section section--cream" id="greeting">
           <div class="section__inner greeting" id="greeting-content"></div>
-          <div class="section-divider section-divider--greeting" aria-hidden="true" ></div>
+          <div class="section-divider section-divider--greeting" aria-hidden="true"></div>
           <div class="names-block" id="names-block"></div>
           <div class="names-block__action">
-            <button type="button" class="btn-solid" id="btn-family-contact" aria-haspopup="dialog">
-              연락하기
-            </button>
+            <button type="button" class="btn-solid" id="btn-family-contact" aria-haspopup="dialog">연락하기</button>
           </div>
         </section>
 
-        <!-- Profiles -->
-        <section class="section" id="profile" style="display: none;">
-          <div class="profiles">
-            <article class="profile-card">
-              <div class="profile-card__photo">
-                <img id="profile-groom-img" src="" alt="" />
-              </div>
-              <h3 class="profile-card__name" id="profile-groom-name"></h3>
-              <p class="profile-card__msg" id="profile-groom-msg"></p>
-            </article>
-            <article class="profile-card">
-              <div class="profile-card__photo">
-                <img id="profile-bride-img" src="" alt="" />
-              </div>
-              <h3 class="profile-card__name" id="profile-bride-name"></h3>
-              <p class="profile-card__msg" id="profile-bride-msg"></p>
-            </article>
-          </div>
-        </section>
-
-        <!-- Wedding Day / Calendar -->
         <section class="section section--cream" id="wedding-day">
           <h2 class="section__title section__title--serif" id="wedding-day-title">Wedding Day</h2>
           <p class="wedding-month-badge" id="wedding-month-label">7월</p>
           <div class="countdown" id="countdown" aria-live="polite">
             <p class="countdown__label">결혼식까지</p>
             <div class="countdown__digits">
-              <span class="countdown__block"
-                ><strong id="cd-days">0</strong><small>일</small></span
-              >
+              <span class="countdown__block"><strong id="cd-days">0</strong><small>일</small></span>
               <span class="countdown__sep">:</span>
-              <span class="countdown__block"
-                ><strong id="cd-hours">0</strong><small>시</small></span
-              >
+              <span class="countdown__block"><strong id="cd-hours">0</strong><small>시</small></span>
               <span class="countdown__sep">:</span>
-              <span class="countdown__block"
-                ><strong id="cd-mins">0</strong><small>분</small></span
-              >
+              <span class="countdown__block"><strong id="cd-mins">0</strong><small>분</small></span>
               <span class="countdown__sep">:</span>
-              <span class="countdown__block"
-                ><strong id="cd-secs">0</strong><small>초</small></span
-              >
+              <span class="countdown__block"><strong id="cd-secs">0</strong><small>초</small></span>
             </div>
             <p class="countdown__done" id="countdown-done" hidden>D-day!</p>
           </div>
@@ -130,14 +87,12 @@
         </section>
         <div class="section-divider" aria-hidden="true"></div>
 
-        <!-- Gallery -->
         <section class="section" id="gallery">
           <h2 class="section__title section__title--gallery">GALLERY</h2>
           <div class="gallery-grid" id="gallery-grid"></div>
         </section>
         <div class="section-divider" aria-hidden="true"></div>
 
-        <!-- Location -->
         <section class="section section--cream" id="location">
           <h2 class="section__title" id="location-title">오시는 길</h2>
           <p class="location__venue" id="location-venue"></p>
@@ -151,34 +106,22 @@
               allowfullscreen
             ></iframe>
             <div class="map-couple-pin" aria-hidden="true" title="예식장 위치">
-              <div class="map-couple-pin__marker"> 
-                <img src="./images/pin.png" alt="pin" class="map-couple-pin__svg"> 
+              <div class="map-couple-pin__marker">
+                <img src="./images/pin.png" alt="" class="map-couple-pin__svg" width="72" height="96" />
               </div>
             </div>
           </div>
           <div class="direction-list" id="direction-list"></div>
           <div class="nav-apps" id="nav-apps" aria-label="길찾기 앱"></div>
         </section>
-        <div class="section-divider" aria-hidden="true" style="display: none;"></div>
+        <div class="section-divider" aria-hidden="true"></div>
 
-        <!-- Guide -->
-        <section class="section section--cream" id="guide" style="display: none;">
-          <h2 class="section__title" id="guide-title">안내</h2>
-          <div class="guide__tabs" id="guide-tabs" role="tablist" aria-label="안내 탭"></div>
-          <div class="guide__viewport">
-            <div class="guide__panel-wrap" id="guide-panel-wrap"></div>
-          </div>
-        </section>
-        <div class="section-divider" aria-hidden="true" style="display: none;"></div>
-
-        <!-- Accounts -->
         <section class="section section--cream" id="gift">
           <h2 class="section__title" id="accounts-title">마음 전하실 곳</h2>
           <div class="accordion" id="accounts-accordion"></div>
         </section>
-        <div class="section-divider" aria-hidden="true" style="display: none;"></div>
+        <div class="section-divider" aria-hidden="true"></div>
 
-        <!-- Guestbook -->
         <section class="section guestbook-section" id="guestbook">
           <div class="guestbook-head">
             <h2 class="section__title">방명록</h2>
@@ -221,7 +164,7 @@
             <button type="button" class="guestbook-page-btn" id="guestbook-next" aria-label="다음 페이지">›</button>
           </div>
         </section>
-        <div class="section-divider" aria-hidden="true" style="display: none;"></div>
+        <div class="section-divider" aria-hidden="true"></div>
 
         <section class="section final-note" id="final-note">
           <div class="final-note__photo">
@@ -230,16 +173,14 @@
           <p class="final-note__text" id="final-note-text"></p>
         </section>
 
-        <!-- Footer -->
-        <footer class="footer" id="contact" style="display: none;">
+        <footer class="footer" id="contact">
           <p class="footer__msg" id="footer-msg"></p>
           <div class="footer__contacts" id="footer-contacts"></div>
         </footer>
       </main>
     </div>
 
-    <!-- 연락하기 -->
-    <div class="modal" id="family-contact-modal" hidden role="dialog" aria-modal="true" aria-labelledby="family-contact-title" >
+    <div class="modal" id="family-contact-modal" hidden role="dialog" aria-modal="true" aria-labelledby="family-contact-title">
       <div class="modal__backdrop" id="family-contact-backdrop" tabindex="-1"></div>
       <div class="modal__panel">
         <div class="modal__head">
@@ -250,7 +191,15 @@
       </div>
     </div>
 
-    <!-- Lightbox (갤러리 — 인스타그램 포스트 레이아웃) -->
+    <div class="surprise-modal" id="surprise-modal" hidden aria-modal="true" role="dialog" aria-labelledby="surprise-modal-title">
+      <div class="surprise-modal__dim" id="surprise-dim" tabindex="-1"></div>
+      <div class="surprise-modal__panel">
+        <h2 class="surprise-modal__title" id="surprise-modal-title">추억 한 장</h2>
+        <button type="button" class="surprise-modal__close" id="surprise-close" aria-label="닫기">×</button>
+        <img class="surprise-modal__img" id="surprise-img" alt="" />
+      </div>
+    </div>
+
     <div class="lightbox" id="lightbox" hidden aria-modal="true" role="dialog">
       <div class="lightbox__dim" id="lightbox-dim" tabindex="-1"></div>
       <button type="button" class="lightbox__close" id="lightbox-close" aria-label="닫기">×</button>
@@ -274,15 +223,6 @@
       </div>
       <button type="button" class="lightbox__nav lightbox__nav--next" id="lightbox-next" aria-label="다음">›</button>
       <div class="lightbox__counter" id="lightbox-counter"></div>
-    </div>
-
-    <div class="surprise-modal" id="surprise-modal" hidden role="dialog" aria-modal="true" aria-labelledby="surprise-title">
-      <div class="surprise-modal__dim" id="surprise-dim" tabindex="-1"></div>
-      <div class="surprise-modal__panel">
-        <button type="button" class="surprise-modal__close" id="surprise-close" aria-label="닫기">×</button>
-        <h2 class="surprise-modal__title" id="surprise-title">깜짝 사진</h2>
-        <img class="surprise-modal__img" id="surprise-img" src="" alt="숨은 사진" loading="lazy" />
-      </div>
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>

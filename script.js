@@ -8,31 +8,6 @@
     return;
   }
 
-  /** 지도 위 핀 안에 들어가는 신랑·신부 일러스트(SVG) */
-  const COUPLE_PIN_SVG = `
-<svg class="couple-pin-svg" viewBox="0 0 72 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <defs>
-    <linearGradient id="pinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#ef5350"/>
-      <stop offset="100%" style="stop-color:#c62828"/>
-    </linearGradient>
-  </defs>
-  <path fill="url(#pinGrad)" d="M36 4C20.5 4 8 16.8 8 32.5c0 14.5 28 55.5 28 55.5s28-41 28-55.5C64 16.8 51.5 4 36 4z"/>
-  <circle cx="36" cy="31" r="22" fill="#fff" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
-  <!-- 신랑 -->
-  <g transform="translate(22 18)">
-    <circle cx="7" cy="7" r="5.5" fill="#455a64"/>
-    <ellipse cx="7" cy="15" rx="6" ry="2.5" fill="#455a64"/>
-    <path d="M3 17h8v11H3z" fill="#37474f"/>
-  </g>
-  <!-- 신부 -->
-  <g transform="translate(38 17)">
-    <path d="M8 4c-3 0-5.5 2.4-5.5 5.5 0 3 2.5 5.5 5.5 5.5s5.5-2.5 5.5-5.5C13.5 6.4 11 4 8 4z" fill="#ffe0b2"/>
-    <path d="M2 14l6 14 6-14c-1.8-1.2-4-1.8-6-1.8s-4.2.6-6 1.8z" fill="#f8bbd0"/>
-    <path d="M5 10h6l-1 4H6z" fill="#fff"/>
-  </g>
-</svg>`;
-
   function seedFromString(str) {
     let h = 0;
     for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
@@ -44,78 +19,6 @@
       return cfg.demoPlaceholder(seedFromString(path));
     }
     return path;
-  }
-
-  // WebAudio 기반 공용 오디오 (파일이 없어도 동작)
-  let audioCtx = null;
-  let synthBgm = null;
-  function ensureAudioContext() {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (!Ctx) return null;
-    if (!audioCtx) audioCtx = new Ctx();
-    if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
-    return audioCtx;
-  }
-
-  function startSynthBgm() {
-    const ctx = ensureAudioContext();
-    if (!ctx || synthBgm) return;
-    const master = ctx.createGain();
-    master.gain.value = 0.055;
-    master.connect(ctx.destination);
-
-    const low = ctx.createOscillator();
-    low.type = "sine";
-    low.frequency.value = 196; // G3
-    const lowGain = ctx.createGain();
-    lowGain.gain.value = 0.55;
-    low.connect(lowGain).connect(master);
-
-    const high = ctx.createOscillator();
-    high.type = "triangle";
-    high.frequency.value = 293.66; // D4
-    const highGain = ctx.createGain();
-    highGain.gain.value = 0.28;
-    high.connect(highGain).connect(master);
-
-    const lfo = ctx.createOscillator();
-    lfo.type = "sine";
-    lfo.frequency.value = 0.08;
-    const lfoGain = ctx.createGain();
-    lfoGain.gain.value = 6;
-    lfo.connect(lfoGain).connect(low.frequency);
-
-    [low, high, lfo].forEach((node) => node.start());
-    synthBgm = { master, nodes: [low, high, lfo] };
-  }
-
-  function stopSynthBgm() {
-    if (!synthBgm) return;
-    const now = audioCtx ? audioCtx.currentTime : 0;
-    try {
-      synthBgm.master.gain.setTargetAtTime(0.0001, now, 0.25);
-      synthBgm.nodes.forEach((node) => node.stop(now + 0.35));
-    } catch (e) {}
-    synthBgm = null;
-  }
-
-  function playChime(volume = 0.18) {
-    const ctx = ensureAudioContext();
-    if (!ctx) return;
-    const now = ctx.currentTime;
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(volume, now + 0.012);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.48);
-    gain.connect(ctx.destination);
-
-    const osc = ctx.createOscillator();
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(880, now);
-    osc.frequency.exponentialRampToValueAtTime(1174.66, now + 0.23);
-    osc.connect(gain);
-    osc.start(now);
-    osc.stop(now + 0.5);
   }
 
   function scrollToId(id) {
@@ -130,6 +33,34 @@
     t.classList.add("is-visible");
     clearTimeout(showToast._timer);
     showToast._timer = setTimeout(() => t.classList.remove("is-visible"), 2200);
+  }
+
+  let surpriseAudioCtx = null;
+  function ensureSurpriseAudioContext() {
+    if (surpriseAudioCtx) return surpriseAudioCtx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    surpriseAudioCtx = new AC();
+    return surpriseAudioCtx;
+  }
+
+  /** 숨은 사진용 — sound 파일이 없을 때 짧은 효과음 */
+  function playChime() {
+    const ctx = ensureSurpriseAudioContext();
+    if (!ctx) return;
+    if (ctx.state === "suspended") ctx.resume().catch(() => {});
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g);
+    g.connect(ctx.destination);
+    o.frequency.value = 880;
+    o.type = "sine";
+    const t0 = ctx.currentTime;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.32);
+    o.start(t0);
+    o.stop(t0 + 0.33);
   }
 
   async function copyText(text) {
@@ -240,17 +171,17 @@
                 (p) => `
               <li class="contact-list__item">
                 <div class="contact-list__who">
-                <div>
                   <span class="contact-list__role">${p.role}</span>
-                  <div>
                   <span class="contact-list__name">${p.name}</span>
                 </div>
-<a class="contact-list__icon-btn" href="tel:${String(p.phone).replace(/[^0-9+]/g, "")}">
-  <img src="images/phone.png" alt="전화">
-</a>
-<a class="contact-list__icon-btn" href="sms:${String(p.phone).replace(/[^0-9+]/g, "")}">
-  <img src="images/message.png" alt="문자">
-</a>
+                <div class="contact-list__actions">
+                  <a class="contact-list__icon-btn" href="tel:${String(p.phone).replace(/[^0-9+]/g, "")}">
+                    <img src="images/phone.png" alt="전화" width="22" height="22" />
+                  </a>
+                  <a class="contact-list__icon-btn" href="sms:${String(p.phone).replace(/[^0-9+]/g, "")}">
+                    <img src="images/message.png" alt="문자" width="22" height="22" />
+                  </a>
+                </div>
               </li>
             `
               )
@@ -359,27 +290,83 @@
     hero.appendChild(layer);
   }
 
-  function renderMapPin() {
-    const el = document.getElementById("map-pin-illustration");
-    if (el) el.innerHTML = COUPLE_PIN_SVG;
-  }
+  function initSurprisePhotos() {
+    const surprise = cfg.surprisePhotos || {};
+    if (!surprise.enabled) return;
 
-  function renderProfiles() {
-    const p = cfg.profiles;
-    const gi = document.getElementById("profile-groom-img");
-    const bi = document.getElementById("profile-bride-img");
-    if (gi) {
-      gi.src = resolveImage(p.groom.image);
-      gi.alt = p.groom.name;
+    const modal = document.getElementById("surprise-modal");
+    const dim = document.getElementById("surprise-dim");
+    const closeBtn = document.getElementById("surprise-close");
+    const img = document.getElementById("surprise-img");
+
+    if (!modal || !dim || !closeBtn || !img) return;
+
+    const hotspots = Array.isArray(surprise.hotspots) ? surprise.hotspots : [];
+    if (!hotspots.length) return;
+
+    const soundPaths = Array.isArray(surprise.sounds) ? surprise.sounds : [];
+    function playSound() {
+      if (!soundPaths.length) {
+        playChime();
+        return;
+      }
+      const sound = soundPaths[Math.floor(Math.random() * soundPaths.length)];
+      const audio = new Audio(sound);
+      audio.volume = 0.85;
+      audio.play().catch(() => playChime());
     }
-    if (bi) {
-      bi.src = resolveImage(p.bride.image);
-      bi.alt = p.bride.name;
+
+    function openTargetPhoto(photoPath) {
+      if (!photoPath) return;
+      img.src = resolveImage(photoPath);
+      modal.hidden = false;
+      document.body.style.overflow = "hidden";
+      playSound();
     }
-    document.getElementById("profile-groom-name").textContent = p.groom.name;
-    document.getElementById("profile-bride-name").textContent = p.bride.name;
-    document.getElementById("profile-groom-msg").textContent = p.groom.message;
-    document.getElementById("profile-bride-msg").textContent = p.bride.message;
+
+    function closeModal() {
+      modal.hidden = true;
+      document.body.style.overflow = "";
+      img.removeAttribute("src");
+    }
+
+    hotspots.forEach((spot, idx) => {
+      const parentId = spot.section || "hero";
+      const parent = document.getElementById(parentId);
+      if (!parent) return;
+
+      if (window.getComputedStyle(parent).position === "static") {
+        parent.classList.add("hidden-hotspot-anchor");
+      }
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "hidden-hotspot";
+      btn.setAttribute("aria-label", spot.label || `숨은 요소 ${idx + 1}`);
+
+      btn.style.left = `${spot.x}%`;
+      btn.style.top = `${spot.y}%`;
+      btn.style.width = `${spot.width || spot.size || 28}px`;
+      btn.style.height = `${spot.height || spot.size || 28}px`;
+
+      if (spot.icon) {
+        btn.style.backgroundImage = `url("${resolveImage(spot.icon)}")`;
+      } else {
+        btn.textContent = "•";
+      }
+
+      btn.addEventListener("click", () => {
+        openTargetPhoto(spot.content);
+      });
+
+      parent.appendChild(btn);
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+    dim.addEventListener("click", closeModal);
+    document.addEventListener("keydown", (e) => {
+      if (!modal.hidden && e.key === "Escape") closeModal();
+    });
   }
 
   function getWeddingInstant() {
@@ -668,30 +655,13 @@
     `;
   }
 
-  function tryPlayBgm() {
-    const audio = document.getElementById("bgm-audio");
-    const hasFile = Boolean(audio && audio.src);
-    if (hasFile) {
-      audio.muted = false;
-      audio.play().catch(() => {});
-      return;
-    }
-    startSynthBgm();
-    const btn = document.getElementById("music-toggle");
-    if (btn) {
-      btn.classList.add("is-playing");
-      btn.setAttribute("aria-pressed", "true");
-    }
-  }
-
   function initMusic() {
     const audio = document.getElementById("bgm-audio");
     const btn = document.getElementById("music-toggle");
-    const bottomBar = document.getElementById("bottom-control");
     const zoomBtn = document.getElementById("btn-font-zoom");
-    const src = cfg.music && cfg.music.src;
+    const musicCfg = cfg.music || {};
+    const src = musicCfg.src;
     if (!audio || !btn) return;
-    btn.hidden = true;
 
     function toggleZoom() {
       const next = !document.documentElement.classList.contains("font-zoom");
@@ -705,109 +675,26 @@
     if (zoomBtn) zoomBtn.addEventListener("click", toggleZoom);
 
     const useAudioFile = Boolean(src);
-    if (useAudioFile) audio.src = src;
-    btn.hidden = false;
-    if (bottomBar) bottomBar.hidden = false;
+    if (useAudioFile) {
+      audio.src = src;
+      audio.volume = typeof musicCfg.volume === "number" ? musicCfg.volume : 0.32;
+    }
+    btn.hidden = !useAudioFile;
 
     btn.addEventListener("click", async () => {
-      if (useAudioFile) {
-        if (audio.paused) {
-          try {
-            await audio.play();
-            btn.classList.add("is-playing");
-            btn.setAttribute("aria-pressed", "true");
-          } catch (e) {}
-        } else {
-          audio.pause();
-          btn.classList.remove("is-playing");
-          btn.setAttribute("aria-pressed", "false");
-        }
-      } else {
-        const on = btn.getAttribute("aria-pressed") === "true";
-        if (on) {
-          stopSynthBgm();
-          btn.classList.remove("is-playing");
-          btn.setAttribute("aria-pressed", "false");
-        } else {
-          startSynthBgm();
+      if (!useAudioFile) return;
+      if (audio.paused) {
+        try {
+          await audio.play();
           btn.classList.add("is-playing");
           btn.setAttribute("aria-pressed", "true");
-        }
+        } catch (e) {}
+      } else {
+        audio.pause();
+        btn.classList.remove("is-playing");
+        btn.setAttribute("aria-pressed", "false");
       }
     });
-
-    window.__revealMusicButton = () => {
-      btn.hidden = false;
-    };
-  }
-
-  function initLanding() {
-    const landing = document.getElementById("landing");
-    const btn = document.getElementById("landing-open");
-    const paper = document.getElementById("landing-paper-text");
-    if (!landing || !btn) {
-      if (typeof window.__revealMusicButton === "function") window.__revealMusicButton();
-      return;
-    }
-    if (paper) paper.textContent = cfg.hero.title || "저희 결혼합니다";
-    const wax = document.getElementById("landing-wax-letter");
-    if (wax && cfg.landingWaxLetter) wax.textContent = cfg.landingWaxLetter;
-
-    function finish() {
-      landing.classList.add("is-done");
-      document.body.classList.remove("landing-active");
-      if (typeof window.__revealMusicButton === "function") window.__revealMusicButton();
-      setTimeout(() => {
-        landing.hidden = true;
-        landing.setAttribute("aria-hidden", "true");
-      }, 650);
-    }
-
-    btn.addEventListener("click", () => {
-      if (landing.classList.contains("is-open")) return;
-      landing.classList.add("is-open");
-      tryPlayBgm();
-      setTimeout(finish, 2100);
-    });
-
-    document.body.classList.add("landing-active");
-  }
-
-  function renderGuide() {
-    const guide = cfg.guide;
-    if (!guide || !Array.isArray(guide.tabs) || !guide.tabs.length) return;
-    const title = document.getElementById("guide-title");
-    const tabsEl = document.getElementById("guide-tabs");
-    const panelWrap = document.getElementById("guide-panel-wrap");
-    if (!tabsEl || !panelWrap) return;
-    if (title) title.textContent = guide.title || "안내";
-
-    tabsEl.innerHTML = guide.tabs
-      .map(
-        (tab, i) =>
-          `<button type="button" class="guide__tab" role="tab" aria-selected="${
-            i === 0 ? "true" : "false"
-          }" data-guide-tab="${i}">${tab.label}</button>`
-      )
-      .join("");
-    panelWrap.innerHTML = guide.tabs
-      .map((tab) => `<article class="guide__panel"><h3>${tab.heading}</h3><p>${tab.text}</p></article>`)
-      .join("");
-
-    function selectTab(index) {
-      tabsEl.querySelectorAll(".guide__tab").forEach((btn, i) => {
-        btn.setAttribute("aria-selected", i === index ? "true" : "false");
-      });
-      panelWrap.style.transform = `translateX(-${index * (100 / guide.tabs.length)}%)`;
-    }
-
-    tabsEl.addEventListener("click", (e) => {
-      const btn = e.target.closest(".guide__tab");
-      if (!btn) return;
-      selectTab(Number(btn.dataset.guideTab || 0));
-    });
-
-    selectTab(0);
   }
 
   function renderFinalNote() {
@@ -827,91 +714,6 @@
     if (fonts.sans) document.documentElement.style.setProperty("--font-sans", fonts.sans);
     if (fonts.serif) document.documentElement.style.setProperty("--font-serif", fonts.serif);
     if (fonts.hero) document.documentElement.style.setProperty("--font-orbit", fonts.hero);
-  }
-
-  function initSurprisePhotos() {
-    const surprise = cfg.surprisePhotos || {};
-    if (!surprise.enabled) return;
-  
-    const modal = document.getElementById("surprise-modal");
-    const dim = document.getElementById("surprise-dim");
-    const closeBtn = document.getElementById("surprise-close");
-    const img = document.getElementById("surprise-img");
-    
-    if (!modal || !dim || !closeBtn || !img) return;
-  
-    const hotspots = Array.isArray(surprise.hotspots) ? surprise.hotspots : [];
-  
-    // [중요!] 여기서 photos.length 체크를 삭제했습니다. 
-    // 이제 popupImages 배열이 없어도 hotspots만 있으면 정상 작동합니다.
-    if (!hotspots.length) return;
-  
-    const soundPaths = Array.isArray(surprise.sounds) ? surprise.sounds : [];
-    function playSound() {
-      if (!soundPaths.length) {
-        playChime();
-        return;
-      }
-      const sound = soundPaths[Math.floor(Math.random() * soundPaths.length)];
-      const audio = new Audio(sound);
-      audio.volume = 0.85;
-      audio.play().catch(() => playChime());
-    }
-  
-    // 전달받은 특정 사진 경로를 팝업창에 띄우는 함수
-    function openTargetPhoto(photoPath) {
-      if (!photoPath) return; 
-      img.src = resolveImage(photoPath); // 이미지 경로 설정
-      modal.hidden = false;
-      document.body.style.overflow = "hidden";
-      playSound();
-    }
-  
-    function closeModal() {
-      modal.hidden = true;
-      document.body.style.overflow = "";
-      img.removeAttribute("src");
-    }
-  
-    hotspots.forEach((spot, idx) => {
-      const parentId = spot.section || "hero";
-      const parent = document.getElementById(parentId);
-      if (!parent) return;
-  
-      if (window.getComputedStyle(parent).position === "static") {
-        parent.classList.add("hidden-hotspot-anchor");
-      }
-  
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "hidden-hotspot";
-      btn.setAttribute("aria-label", spot.label || `숨은 요소 ${idx + 1}`);
-  
-      // 위치 및 크기 (가로/세로 독립 적용)
-      btn.style.left = `${spot.x}%`;
-      btn.style.top = `${spot.y}%`;
-      btn.style.width = `${spot.width || spot.size || 28}px`;
-      btn.style.height = `${spot.height || spot.size || 28}px`;
-  
-      if (spot.icon) {
-        btn.style.backgroundImage = `url("${spot.icon}")`;
-      } else {
-        btn.textContent = "•";
-      }
-  
-      // ⭐ 클릭 시 랜덤이 아닌 spot.content에 지정된 사진을 엽니다.
-      btn.addEventListener("click", () => {
-        openTargetPhoto(spot.content); 
-      });
-  
-      parent.appendChild(btn);
-    });
-  
-    closeBtn.addEventListener("click", closeModal);
-    dim.addEventListener("click", closeModal);
-    document.addEventListener("keydown", (e) => {
-      if (!modal.hidden && e.key === "Escape") closeModal();
-    });
   }
 
   function renderAccounts() {
@@ -970,11 +772,18 @@
 
   function renderFooter() {
     const f = cfg.footer;
-    document.getElementById("footer-msg").textContent = f.message;
-    document.getElementById("footer-contacts").innerHTML = `
+    const msg = document.getElementById("footer-msg");
+    const contacts = document.getElementById("footer-contacts");
+    if (!msg || !contacts || !f) return;
+    msg.textContent = f.message || "";
+    if (f.groomPhone && f.bridePhone) {
+      contacts.innerHTML = `
       <a class="footer__link" href="tel:${f.groomPhone.replace(/[^0-9+]/g, "")}">신랑에게 연락하기 · ${f.groomPhone}</a>
       <a class="footer__link" href="tel:${f.bridePhone.replace(/[^0-9+]/g, "")}">신부에게 연락하기 · ${f.bridePhone}</a>
     `;
+    } else {
+      contacts.innerHTML = "";
+    }
   }
 
   function bindHeroButtons() {
@@ -1219,21 +1028,17 @@
   initHeroFlowerRain();
   renderGreeting();
   renderFamilyContactModal();
-  renderMapPin();
-  renderProfiles();
   renderWeddingDay();
   initCountdown();
   renderQuickActions();
   renderGallery();
   setupLightbox();
   initMusic();
-  initLanding();
   renderLocation();
-  renderGuide();
   renderAccounts();
   renderFinalNote();
   renderFooter();
   bindHeroButtons();
-  initGuestbook();
   initSurprisePhotos();
+  initGuestbook();
 })();
