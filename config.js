@@ -44,7 +44,7 @@ window.INVITATION_CONFIG = {
         section: "wedding-day",
         x: 88,
         y: 95,
-        size: 18,
+        size: 50,
         label: "숨은 사진 3",
         icon: "images/hidden-1.png",
         content: "images/surprise-03.jpg",
