@@ -46,7 +46,7 @@ window.INVITATION_CONFIG = {
         y: 95,
         size: 18,
         label: "숨은 사진 3",
-        icon: "images/hidden-8.png",
+        icon: "images/hidden-1.png",
         content: "images/surprise-03.jpg",
       },
       {
