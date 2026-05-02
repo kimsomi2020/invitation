@@ -502,11 +502,7 @@
       )
       .join("");
 
-    const dots = document.createElement("div");
-    dots.className = "gallery-dots";
-    dots.setAttribute("aria-hidden", "true");
-    dots.innerHTML = '<span class="is-active"></span><span></span><span></span>';
-    grid.after(dots);
+
   }
 
   function fillLightboxSocial() {

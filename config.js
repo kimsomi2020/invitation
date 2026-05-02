@@ -70,7 +70,7 @@ window.INVITATION_CONFIG = {
       },
       {
         section: "location",
-        x: 97,
+        x: 92,
         y: 70,
         size: 18,
         label: "숨은 사진 6",
@@ -83,12 +83,12 @@ window.INVITATION_CONFIG = {
         y: 0,
         size: 18,
         label: "숨은 사진 7",
-        icon: "images/hidden-7.png",
+        icon: "images/hidden-8.png",
         content: "images/surprise-07.jpg",
       },
       {
         section: "final-note",
-        x: 97,
+        x: 92,
         y: 58,
         size: 18,
         label: "숨은 사진 8",
