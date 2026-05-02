@@ -89,7 +89,7 @@ window.INVITATION_CONFIG = {
       {
         section: "final-note",
         x: 92,
-        y: 58,
+        y: 70,
         size: 18,
         label: "숨은 사진 8",
         icon: "images/hidden-8.png",
