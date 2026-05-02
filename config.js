@@ -101,7 +101,7 @@ window.INVITATION_CONFIG = {
   fonts: {
     sans: '"Noto Sans KR", system-ui, sans-serif',
     serif: '"Nanum Myeongjo", serif',
-    hero: '"Orbit", sans-serif',
+
   },
 
   greeting: {
