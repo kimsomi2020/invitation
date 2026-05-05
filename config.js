@@ -51,9 +51,9 @@ window.INVITATION_CONFIG = {
         content: "images/surprise-03.jpg",
       },
       {
-        section: "wedding-day",
-        x: 85,
-        y: 0,
+        section: "gallery",
+        x: 45,
+        y: 93,
         width: 50,
         height: 40,
         label: "숨은 사진 4",
