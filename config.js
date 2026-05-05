@@ -187,8 +187,8 @@ window.INVITATION_CONFIG = {
 
   /** 배경음 — mp3 경로를 넣으면 스피커 버튼 표시. 빈 문자열이면 버튼 숨김 */
   music: {
-    src: "",
-    volume: 0.32,
+    src: "audio/bgm-soft.mp3",
+    volume: 0.2,
   },
 
   accounts: {
