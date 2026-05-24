@@ -613,15 +613,175 @@
     );
   }
 
+  function buildMapEmbedUrl(L) {
+    if (!L) return "";
+    const provider = L.mapEmbedProvider || "osm";
+    const lat = Number(L.lat);
+    const lng = Number(L.lng);
+    const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+
+    if (provider === "custom" && L.mapEmbedUrl) {
+      return L.mapEmbedUrl;
+    }
+
+    if (provider === "google" && hasCoords) {
+      return `https://maps.google.com/maps?q=${lat},${lng}&hl=ko&z=16&output=embed`;
+    }
+
+    if (hasCoords) {
+      const padLng = 0.011;
+      const padLat = 0.008;
+      const bbox = `${lng - padLng},${lat - padLat},${lng + padLng},${lat + padLat}`;
+      return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${lat}%2C${lng}`;
+    }
+
+    if (L.mapEmbedUrl) {
+      try {
+        const url = new URL(L.mapEmbedUrl);
+        const q = url.searchParams.get("q");
+        if (q) url.searchParams.set("q", q);
+        if (!url.searchParams.has("hl")) url.searchParams.set("hl", "ko");
+        if (!url.searchParams.has("z")) url.searchParams.set("z", "16");
+        if (!url.searchParams.has("output")) url.searchParams.set("output", "embed");
+        return url.toString();
+      } catch (e) {
+        return L.mapEmbedUrl;
+      }
+    }
+
+    return "";
+  }
+
+  function buildKakaoMapUrl(L) {
+    if (L.kakaoMapUrl) return L.kakaoMapUrl;
+    const lat = Number(L.lat);
+    const lng = Number(L.lng);
+    const label = encodeURIComponent(L.venueName || "예식장");
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      return `https://map.kakao.com/link/map/${label},${lat},${lng}`;
+    }
+    return `https://map.kakao.com/link/search/${encodeURIComponent(L.address || L.venueName || "")}`;
+  }
+
+  function buildNaverMapUrl(L) {
+    if (L.naverMapUrl) return L.naverMapUrl;
+    const lat = Number(L.lat);
+    const lng = Number(L.lng);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      return `https://map.naver.com/v5/?lng=${lng}&lat=${lat}&zoom=${L.naverMapZoom || 16}`;
+    }
+    return `https://map.naver.com/v5/search/${encodeURIComponent(L.address || L.venueName || "")}`;
+  }
+
+  function hideMapLayers() {
+    const iframe = document.getElementById("map-iframe");
+    const naverEl = document.getElementById("naver-map");
+    const fallback = document.getElementById("map-static-fallback");
+    if (iframe) iframe.hidden = true;
+    if (naverEl) naverEl.hidden = true;
+    if (fallback) fallback.hidden = true;
+  }
+
+  function showMapStaticFallback(L) {
+    hideMapLayers();
+    const fallback = document.getElementById("map-static-fallback");
+    const venue = document.getElementById("map-fallback-venue");
+    const addr = document.getElementById("map-fallback-address");
+    const link = document.getElementById("map-static-naver-link");
+    if (!fallback) return;
+    if (venue) venue.textContent = L.venueName || "";
+    if (addr) addr.textContent = L.address || "";
+    if (link) link.href = buildNaverMapUrl(L);
+    fallback.hidden = false;
+  }
+
+  function loadNaverMapSdk(clientId) {
+    return new Promise((resolve, reject) => {
+      if (window.naver && window.naver.maps) {
+        resolve();
+        return;
+      }
+      const existing = document.getElementById("naver-maps-sdk");
+      if (existing) {
+        existing.addEventListener("load", () => resolve(), { once: true });
+        existing.addEventListener("error", () => reject(new Error("naver sdk load failed")), { once: true });
+        return;
+      }
+      const script = document.createElement("script");
+      script.id = "naver-maps-sdk";
+      script.async = true;
+      script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(clientId)}`;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("naver sdk load failed"));
+      document.head.appendChild(script);
+    });
+  }
+
+  function initNaverMap(L) {
+    const container = document.getElementById("naver-map");
+    const clientId = (L.naverMapClientId || L.ncpKeyId || "").trim();
+    const lat = Number(L.lat);
+    const lng = Number(L.lng);
+
+    if (!container || !clientId || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+      showMapStaticFallback(L);
+      return;
+    }
+
+    loadNaverMapSdk(clientId)
+      .then(() => {
+        if (!window.naver || !window.naver.maps) {
+          throw new Error("naver maps unavailable");
+        }
+        hideMapLayers();
+        container.hidden = false;
+        const center = new naver.maps.LatLng(lat, lng);
+        window.__inviteNaverMap = new naver.maps.Map(container, {
+          center,
+          zoom: Number(L.naverMapZoom) || 16,
+          scaleControl: false,
+          mapDataControl: false,
+          logoControl: true,
+          zoomControl: true,
+        });
+      })
+      .catch(() => {
+        showMapStaticFallback(L);
+      });
+  }
+
+  function initEmbeddedMap(L) {
+    const iframe = document.getElementById("map-iframe");
+    const embedUrl = buildMapEmbedUrl(L);
+    if (!iframe || !embedUrl) {
+      showMapStaticFallback(L);
+      return;
+    }
+    hideMapLayers();
+    iframe.src = embedUrl;
+    iframe.hidden = false;
+  }
+
+  function initMapSection(L) {
+    const provider = (L.mapEmbedProvider || "naver").toLowerCase();
+    if (provider === "naver") {
+      initNaverMap(L);
+      return;
+    }
+    initEmbeddedMap(L);
+  }
+
   function renderLocation() {
     const L = cfg.location;
     document.getElementById("location-title").textContent = L.titleKo;
     document.getElementById("location-venue").textContent = L.venueName;
     document.getElementById("location-address").textContent = L.address;
-    const iframe = document.getElementById("map-iframe");
-    if (iframe && L.mapEmbedUrl) {
-      iframe.src = L.mapEmbedUrl;
-    }
+
+    const naverUrl = buildNaverMapUrl(L);
+    const mapExternal = document.getElementById("map-open-external");
+    if (mapExternal) mapExternal.href = naverUrl;
+
+    initMapSection(L);
 
     const d = L.directions;
     document.getElementById("direction-list").innerHTML = `
@@ -635,19 +795,15 @@
       </dl>
     `;
 
-    const nameEnc = encodeURIComponent(L.venueName);
     const addrEnc = encodeURIComponent(L.address);
-    const lat = L.lat;
-    const lng = L.lng;
 
-    const kakao = `https://kko.to/QxNmYB8T1b`;
-    const naver = `https://map.naver.com/v5/search/${addrEnc}`;
+    const kakaoNav = buildKakaoMapUrl(L);
+    const naverNav = naverUrl;
     const google = `https://maps.app.goo.gl/M7rYMq6dSnA11WT56`;
-    const tmap = `https://tmap.co.kr/tmap3/mobileRoute.jsp?searchKeyword=${addrEnc}`;
 
     document.getElementById("nav-apps").innerHTML = `
-      <a class="nav-app" href="${kakao}" target="_blank" rel="noopener">카카오맵</a>
-      <a class="nav-app" href="${naver}" target="_blank" rel="noopener">네이버 지도</a>
+      <a class="nav-app" href="${kakaoNav}" target="_blank" rel="noopener">카카오맵</a>
+      <a class="nav-app" href="${naverNav}" target="_blank" rel="noopener">네이버 지도</a>
       <a class="nav-app" href="${google}" target="_blank" rel="noopener">구글 지도</a>
     `;
   }

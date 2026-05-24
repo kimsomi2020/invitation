@@ -97,20 +97,37 @@
           <h2 class="section__title" id="location-title">오시는 길</h2>
           <p class="location__venue" id="location-venue"></p>
           <p class="location__address" id="location-address"></p>
-          <div class="map-frame map-frame--with-pin">
+          <div class="map-frame map-frame--with-pin" id="map-frame">
+            <div id="naver-map" class="map-canvas map-canvas--naver" hidden></div>
             <iframe
               id="map-iframe"
-              title="지도"
-              loading="lazy"
+              class="map-canvas map-canvas--iframe"
+              title="예식장 위치 지도"
+              loading="eager"
               referrerpolicy="no-referrer-when-downgrade"
               allowfullscreen
+              hidden
             ></iframe>
+            <div id="map-static-fallback" class="map-static-fallback" hidden>
+              <p class="map-static-fallback__venue" id="map-fallback-venue"></p>
+              <p class="map-static-fallback__addr" id="map-fallback-address"></p>
+              <a
+                id="map-static-naver-link"
+                class="map-static-fallback__btn"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                >네이버 지도에서 보기</a>
+            </div>
             <div class="map-couple-pin" aria-hidden="true" title="예식장 위치">
               <div class="map-couple-pin__marker">
                 <img src="./images/pin.png" alt="" class="map-couple-pin__svg" width="72" height="96" />
               </div>
             </div>
           </div>
+          <p class="map-fallback-note">
+            <a id="map-open-external" href="#" target="_blank" rel="noopener noreferrer">지도가 보이지 않으면 네이버 지도에서 열기</a>
+          </p>
           <div class="direction-list" id="direction-list"></div>
           <div class="nav-apps" id="nav-apps" aria-label="길찾기 앱"></div>
         </section>

@@ -168,7 +168,12 @@ window.INVITATION_CONFIG = {
     titleKo: "오시는 길",
     venueName: "스타시티 아트홀",
     address: "서울특별시 광진구 능동로 110 스타시티영존 5층",
-    mapEmbedUrl: "https://www.google.com/maps?q=스타시티아트홀&output=embed",
+    /** osm(권장) | google | custom — 카카오톡 등 인앱 브라우저에서 구글 지도 오류 방지 */
+    mapEmbedProvider: "osm",
+    /** mapEmbedProvider: "custom" 일 때만 사용 */
+    mapEmbedUrl: "",
+    /** 카카오맵 바로가기 (없으면 좌표로 자동 생성) */
+    kakaoMapUrl: "https://kko.to/QxNmYB8T1b",
     lat: 37.5576,
     lng: 127.0795,
     directions: {
