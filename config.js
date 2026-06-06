@@ -24,10 +24,10 @@ window.INVITATION_CONFIG = {
     hotspots: [
       {
         section: "greeting",
-        x: 30,
-        y: 92,
- width: 190,
-  height: 60,  
+        x: 20,
+        y: 87,
+ width: 280,
+  height: 90,  
         label: "숨은 사진 1",
         icon: "images/hidden-1.png",
         content: "images/surprise-01.jpg",

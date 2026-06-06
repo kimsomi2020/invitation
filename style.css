@@ -1158,8 +1158,8 @@ flex: 0 0 3.2rem;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
 
-  width: 88% !important;
-  max-width: 340px !important;
+  width: 94% !important;
+  max-width: 400px !important;
   max-height: 80vh !important;
 
   overflow-y: auto !important;
@@ -1244,6 +1244,8 @@ font-weight: 700;
 font-size: 0.9rem;
 color: #222;
 font-family: "Nanum Myeongjo", serif;
+word-break: keep-all;
+line-height: 1.45;
 }
 
 .contact-list__role {
