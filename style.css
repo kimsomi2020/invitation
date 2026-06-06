@@ -13,7 +13,6 @@
   --invite-max: 440px;
   --radius-pill: 999px;
   --radius-card: 12px;
-  --section-divider-image: url("images/section-divider.png");
 }
 
 *,
@@ -145,6 +144,7 @@ padding: 0 0 5.5rem;
   pointer-events: none;
   overflow: hidden;
   z-index: 2;
+  contain: strict;
 }
 
 .hero-flower-rain__petal {
@@ -154,6 +154,7 @@ padding: 0 0 5.5rem;
   color: rgba(255, 228, 239, 0.82);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   animation: flower-fall linear infinite;
+  will-change: transform;
 }
 
 @keyframes flower-fall {
@@ -232,15 +233,6 @@ padding: 0 0 5.5rem;
   text-align: center;
 }
 
-.hero__title {
-  margin: 0 0 0.75rem;
-  font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 5vw, 1.85rem);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-}
-
 .hero__subtitle {
   margin: 0 0 0.35rem;
   font-size: 0.9rem;
@@ -294,12 +286,10 @@ padding: 0 0 5.5rem;
 .section-divider {
   width: 100%;
   height: 24px;
-  background-image:
-    var(--section-divider-image),
-    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.18) 50%, transparent 100%);
-  background-repeat: no-repeat, no-repeat;
-  background-position: center, center;
-  background-size: 140px 16px, 72% 1px;
+  background-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.18) 50%, transparent 100%);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 72% 1px;
   opacity: 0.55;
 }
 
@@ -577,9 +567,6 @@ gap: 0.55rem;
 border: 1px solid rgba(0, 0, 0, 0.1);
 background: rgba(255, 255, 255, 0.97);
 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
-}
-
-.bottom-control__btn {
 min-height: 2.9rem;
 padding: 0.7rem 1.35rem;
 border-radius: 999px;
@@ -750,24 +737,6 @@ flex: 0 0 3.2rem;
   transform: scale(1.04);
 }
 
-.gallery-dots {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 1rem;
-}
-
-.gallery-dots span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #ccc;
-}
-
-.gallery-dots span.is-active {
-  background: var(--text-muted);
-}
-
 /* Location */
 .location__venue {
   text-align: center;
@@ -802,62 +771,8 @@ flex: 0 0 3.2rem;
   border: 0;
 }
 
-.map-canvas--naver {
-  min-height: 100%;
-}
-
 .map-canvas--iframe {
   display: block;
-}
-
-/* 네이버 지도 타일이 전역 img { max-width:100% } 에 깨지는 것 방지 */
-#naver-map img {
-  max-width: none !important;
-}
-
-.map-static-fallback {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.65rem;
-  width: 100%;
-  height: 100%;
-  padding: 1.25rem 1rem;
-  text-align: center;
-  background: linear-gradient(165deg, #eef0f2 0%, #e2e6ea 100%);
-}
-
-.map-static-fallback__venue {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.map-static-fallback__addr {
-  margin: 0;
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: var(--text-muted);
-}
-
-.map-static-fallback__btn {
-  display: inline-flex;
-  margin-top: 0.35rem;
-  padding: 0.65rem 1.25rem;
-  border-radius: var(--radius-pill);
-  background: #03c75a;
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 4px 14px rgba(3, 199, 90, 0.28);
-}
-
-.map-static-fallback__btn:active {
-  transform: scale(0.98);
 }
 
 .map-fallback-note {
@@ -905,16 +820,11 @@ flex: 0 0 3.2rem;
   height: auto;
 }
 
-.couple-pin-svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
 .direction-list {
   margin-top: 1.25rem;
   font-size: 0.82rem;
   color: var(--text);
+  white-space: pre-line;
 }
 
 .direction-list dl {
@@ -1263,25 +1173,6 @@ flex: 0 0 3.2rem;
   display: none;
 }
 
-/* 모달 배경(어둡게 변하는 부분) */
-.modal__overlay {
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-}
-@keyframes modal-up {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
 .modal__head {
   display: flex;
   align-items: center;
@@ -1435,232 +1326,6 @@ transition: opacity 0.34s ease;
   transform: translate(-50%, -50%) translateY(0);
   opacity: 1;
 }
-/* Guestbook */
-.guestbook-head {
-display: flex;
-align-items: center;
-justify-content: center;
-position: relative;
-}
-
-.guestbook-head .section__title {
-margin-bottom: 1.25rem;
-}
-
-.guestbook-admin-btn {
-position: absolute;
-right: 0;
-top: -0.15rem;
-border: 1px solid rgba(0, 0, 0, 0.12);
-border-radius: 999px;
-background: #fff;
-font-size: 0.72rem;
-padding: 0.33rem 0.65rem;
-color: #606060;
-}
-
-.guestbook-admin-btn.is-active {
-background: #2f2f2f;
-color: #fff;
-border-color: #2f2f2f;
-}
-
-.guestbook-section__desc {
-margin: 0 0 1.3rem;
-text-align: center;
-font-size: 0.9rem;
-line-height: 1.75;
-color: #474747;
-}
-
-.guestbook-form {
-background: #fff;
-border-radius: 10px;
-border: 1px solid rgba(0, 0, 0, 0.06);
-padding: 0.95rem;
-box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
-}
-
-.guestbook-form__field + .guestbook-form__field {
-margin-top: 0.75rem;
-}
-
-.guestbook-form__head {
-display: flex;
-align-items: center;
-justify-content: space-between;
-margin-bottom: 0.4rem;
-}
-
-.guestbook-form__head label {
-font-size: 0.82rem;
-font-weight: 600;
-color: #3b3b3b;
-}
-
-.guestbook-form__counter {
-font-size: 0.72rem;
-color: #9a9a9a;
-}
-
-.guestbook-form input,
-.guestbook-form textarea {
-width: 100%;
-border: 1px solid rgba(0, 0, 0, 0.09);
-border-radius: 8px;
-padding: 0.75rem 0.8rem;
-font: inherit;
-font-size: 0.84rem;
-color: #222;
-background: #fff;
-}
-
-.guestbook-form input::placeholder,
-.guestbook-form textarea::placeholder {
-color: #b1b1b1;
-}
-
-.guestbook-form textarea {
-resize: vertical;
-min-height: 7.25rem;
-}
-
-.guestbook-form__submit {
-width: 100%;
-margin-top: 0.85rem;
-border: none;
-border-radius: 8px;
-background: #2c2c2c;
-color: #fff;
-padding: 0.78rem 1rem;
-font-size: 0.88rem;
-font-weight: 600;
-letter-spacing: 0.01em;
-transition: opacity 0.2s ease, transform 0.15s ease;
-}
-
-.guestbook-form__submit:hover {
-opacity: 0.92;
-}
-
-.guestbook-form__submit:active {
-transform: scale(0.985);
-}
-
-.guestbook-list {
-margin-top: 1.5rem;
-display: grid;
-gap: 0.7rem;
-}
-
-.guestbook-item {
-background: #fff;
-border: 1px solid rgba(0, 0, 0, 0.06);
-border-radius: 8px;
-padding: 0.75rem 0.85rem 0.7rem;
-transform: rotate(var(--card-tilt, 0deg));
-transform-origin: center;
-}
-
-.guestbook-item__top {
-display: flex;
-justify-content: space-between;
-align-items: center;
-gap: 0.5rem;
-margin-bottom: 0.45rem;
-}
-
-.guestbook-item__name {
-font-size: 0.84rem;
-font-weight: 700;
-color: #242424;
-}
-
-.guestbook-item__badge {
-font-size: 0.68rem;
-color: #a2a2a2;
-}
-
-.guestbook-item__delete {
-margin-left: auto;
-border: 1px solid rgba(0, 0, 0, 0.12);
-background: #fff;
-border-radius: 6px;
-font-size: 0.72rem;
-padding: 0.2rem 0.48rem;
-color: #555;
-}
-
-.guestbook-item__message {
-margin: 0;
-font-size: 0.83rem;
-line-height: 1.65;
-color: #363636;
-white-space: pre-wrap;
-word-break: break-word;
-}
-
-.guestbook-item__date {
-display: inline-block;
-margin-top: 0.55rem;
-font-size: 0.7rem;
-color: #ababab;
-}
-
-.guestbook-empty {
-margin: 1rem 0 0;
-text-align: center;
-font-size: 0.82rem;
-color: #8d8d8d;
-}
-
-.guestbook-pagination {
-margin-top: 1rem;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 0.55rem;
-}
-
-.guestbook-page-btn,
-.guestbook-page-number {
-border: 1px solid rgba(0, 0, 0, 0.15);
-background: #fff;
-color: #3a3a3a;
-}
-
-.guestbook-page-btn {
-width: 1.95rem;
-height: 1.95rem;
-border-radius: 6px;
-font-size: 1.1rem;
-}
-
-.guestbook-page-btn:disabled {
-opacity: 0.45;
-cursor: not-allowed;
-}
-
-.guestbook-page-numbers {
-display: flex;
-align-items: center;
-gap: 0.42rem;
-}
-
-.guestbook-page-number {
-min-width: 1.95rem;
-height: 1.95rem;
-border-radius: 6px;
-font-size: 0.86rem;
-font-weight: 600;
-}
-
-.guestbook-page-number.is-active {
-border-color: #2f2f2f;
-color: #202020;
-box-shadow: inset 0 0 0 1px #2f2f2f;
-}
-
 .lightbox__nav--prev {
   left: max(0.35rem, env(safe-area-inset-left));
 }
@@ -1792,10 +1457,6 @@ box-shadow: inset 0 0 0 1px #2f2f2f;
   line-height: 1.8;
   white-space: pre-line;
 }
-.direction-list {
-  white-space: pre-line;
-}
-
 @font-face {
   font-family: "Orbit";
   src: url("./fonts/orbit.woff2") format("woff2");

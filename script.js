@@ -176,10 +176,10 @@
                 </div>
                 <div class="contact-list__actions">
                   <a class="contact-list__icon-btn" href="tel:${String(p.phone).replace(/[^0-9+]/g, "")}">
-                    <img src="images/phone.png" alt="전화" width="22" height="22" />
+                    <img src="images/phone.png" alt="전화" width="22" height="22" loading="lazy" decoding="async" />
                   </a>
                   <a class="contact-list__icon-btn" href="sms:${String(p.phone).replace(/[^0-9+]/g, "")}">
-                    <img src="images/message.png" alt="문자" width="22" height="22" />
+                    <img src="images/message.png" alt="문자" width="22" height="22" loading="lazy" decoding="async" />
                   </a>
                 </div>
               </li>
@@ -191,15 +191,21 @@
       `;
     }
 
-    body.innerHTML = block(fc.groomSide) + block(fc.brideSide);
-
     const modal = document.getElementById("family-contact-modal");
     const openBtn = document.getElementById("btn-family-contact");
     const closeBtn = document.getElementById("family-contact-close");
     const backdrop = document.getElementById("family-contact-backdrop");
     let openingTimer = null;
+    let bodyRendered = false;
+
+    function ensureBody() {
+      if (bodyRendered) return;
+      bodyRendered = true;
+      body.innerHTML = block(fc.groomSide) + block(fc.brideSide);
+    }
 
     function openModal() {
+      ensureBody();
       if (openingTimer) clearTimeout(openingTimer);
       openBtn.disabled = true;
       openBtn.classList.add("is-waiting");
@@ -273,20 +279,19 @@
     const layer = document.createElement("div");
     layer.className = "hero-flower-rain";
     layer.style.setProperty("--fall-distance", `${hero.offsetHeight + 120}px`);
+    const frag = document.createDocumentFragment();
     for (let i = 0; i < count; i++) {
       const node = document.createElement("span");
       node.className = "hero-flower-rain__petal";
       node.textContent = petals[i % petals.length];
-      const left = Math.random() * 100;
-      const delay = Math.random() * 12;
-      const duration = 11 + Math.random() * 8;
-      node.style.left = `${left}%`;
-      node.style.animationDelay = `${delay}s`;
-      node.style.animationDuration = `${duration}s`;
+      node.style.left = `${Math.random() * 100}%`;
+      node.style.animationDelay = `${Math.random() * 12}s`;
+      node.style.animationDuration = `${11 + Math.random() * 8}s`;
       node.style.opacity = `${0.2 + Math.random() * 0.3}`;
       node.style.setProperty("--drift-x", `${-12 + Math.random() * 24}px`);
-      layer.appendChild(node);
+      frag.appendChild(node);
     }
+    layer.appendChild(frag);
     hero.appendChild(layer);
   }
 
@@ -330,20 +335,11 @@
       img.removeAttribute("src");
     }
 
-    hotspots.forEach((spot, idx) => {
-      const parentId = spot.section || "hero";
-      const parent = document.getElementById(parentId);
-      if (!parent) return;
-
-      if (window.getComputedStyle(parent).position === "static") {
-        parent.classList.add("hidden-hotspot-anchor");
-      }
-
+    function mountHotspot(spot, idx, parent) {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "hidden-hotspot";
       btn.setAttribute("aria-label", spot.label || `숨은 요소 ${idx + 1}`);
-
       btn.style.left = `${spot.x}%`;
       btn.style.top = `${spot.y}%`;
       btn.style.width = `${spot.width || spot.size || 28}px`;
@@ -355,12 +351,40 @@
         btn.textContent = "•";
       }
 
-      btn.addEventListener("click", () => {
-        openTargetPhoto(spot.content);
-      });
-
+      btn.addEventListener("click", () => openTargetPhoto(spot.content));
       parent.appendChild(btn);
+    }
+
+    function mountSectionHotspots(sectionId, spots) {
+      const parent = document.getElementById(sectionId);
+      if (!parent) return;
+      parent.classList.add("hidden-hotspot-anchor");
+      spots.forEach((spot, idx) => mountHotspot(spot, idx, parent));
+    }
+
+    const bySection = {};
+    hotspots.forEach((spot) => {
+      const sectionId = spot.section || "hero";
+      (bySection[sectionId] ||= []).push(spot);
     });
+
+    if ("IntersectionObserver" in window) {
+      Object.entries(bySection).forEach(([sectionId, spots]) => {
+        const parent = document.getElementById(sectionId);
+        if (!parent) return;
+        const obs = new IntersectionObserver(
+          (entries) => {
+            if (!entries[0].isIntersecting) return;
+            mountSectionHotspots(sectionId, spots);
+            obs.disconnect();
+          },
+          { rootMargin: "120px" }
+        );
+        obs.observe(parent);
+      });
+    } else {
+      Object.entries(bySection).forEach(([sectionId, spots]) => mountSectionHotspots(sectionId, spots));
+    }
 
     closeBtn.addEventListener("click", closeModal);
     dim.addEventListener("click", closeModal);
@@ -411,17 +435,24 @@
     const elDone = document.getElementById("countdown-done");
     const digits = document.querySelector(".countdown__digits");
     const label = document.querySelector(".countdown__label");
+    let done = false;
+    let lastDay = -1;
+    let lastHour = -1;
+    let lastMin = -1;
+    let lastSec = -1;
 
     function tick() {
-      const now = Date.now();
-      let diff = target - now;
+      const diff = target - Date.now();
 
       if (diff <= 0) {
-        if (digits) digits.hidden = true;
-        if (label) label.hidden = true;
-        if (elDone) {
-          elDone.hidden = false;
-          elDone.textContent = "저희 결혼식 날이에요 💍";
+        if (!done) {
+          done = true;
+          if (digits) digits.hidden = true;
+          if (label) label.hidden = true;
+          if (elDone) {
+            elDone.hidden = false;
+            elDone.textContent = "저희 결혼식 날이에요 💍";
+          }
         }
         return;
       }
@@ -435,10 +466,22 @@
       const hour = Math.floor(diff / 3600000) % 24;
       const day = Math.floor(diff / 86400000);
 
-      if (elDays) elDays.textContent = String(day);
-      if (elHours) elHours.textContent = pad2(hour);
-      if (elMins) elMins.textContent = pad2(min);
-      if (elSecs) elSecs.textContent = pad2(sec);
+      if (elDays && day !== lastDay) {
+        lastDay = day;
+        elDays.textContent = String(day);
+      }
+      if (elHours && hour !== lastHour) {
+        lastHour = hour;
+        elHours.textContent = pad2(hour);
+      }
+      if (elMins && min !== lastMin) {
+        lastMin = min;
+        elMins.textContent = pad2(min);
+      }
+      if (elSecs && sec !== lastSec) {
+        lastSec = sec;
+        elSecs.textContent = pad2(sec);
+      }
     }
 
     tick();
@@ -496,30 +539,33 @@
       .map(
         (path, i) => `
       <button type="button" class="gallery-item" data-index="${i}" aria-label="사진 ${i + 1} 크게 보기">
-        <img src="${galleryUrls[i]}" alt="갤러리 ${i + 1}" loading="lazy" width="400" height="400" />
+        <img src="${galleryUrls[i]}" alt="갤러리 ${i + 1}" loading="lazy" decoding="async" width="400" height="400" />
       </button>
     `
       )
       .join("");
-
-
-    
   }
 
   function fillLightboxSocial() {
     const gs = cfg.gallerySocial || cfg.instagram;
     if (!gs) return;
-    const av = document.getElementById("lightbox-ig-avatar");
     const user = document.getElementById("lightbox-ig-user");
     const likes = document.getElementById("lightbox-ig-likes");
     const cap = document.getElementById("lightbox-ig-caption");
-    if (av) av.src = resolveImage(gs.avatar);
     if (user) {
       const u = gs.username || "";
       user.textContent = u.startsWith("@") ? u : u ? `@${u}` : "";
     }
     if (likes) likes.textContent = gs.likedBy || "";
     if (cap) cap.textContent = gs.caption || "";
+  }
+
+  function loadLightboxAvatar() {
+    const gs = cfg.gallerySocial || cfg.instagram;
+    const av = document.getElementById("lightbox-ig-avatar");
+    if (!gs || !av || av.dataset.loaded) return;
+    av.src = resolveImage(gs.avatar);
+    av.dataset.loaded = "1";
   }
 
   function setupLightbox() {
@@ -541,6 +587,7 @@
 
     function open(i) {
       index = i;
+      loadLightboxAvatar();
       update();
       lb.hidden = false;
       document.body.style.overflow = "hidden";
@@ -670,8 +717,26 @@
     document.getElementById("location-address").textContent = L.address;
     const iframe = document.getElementById("map-iframe");
     const embedUrl = buildMapEmbedUrl(L);
+    const mapFrame = document.getElementById("map-frame");
     if (iframe && embedUrl) {
-      iframe.src = embedUrl;
+      const loadMap = () => {
+        if (iframe.dataset.loaded) return;
+        iframe.dataset.loaded = "1";
+        iframe.src = embedUrl;
+      };
+      if ("IntersectionObserver" in window && mapFrame) {
+        const obs = new IntersectionObserver(
+          (entries) => {
+            if (!entries[0].isIntersecting) return;
+            loadMap();
+            obs.disconnect();
+          },
+          { rootMargin: "240px" }
+        );
+        obs.observe(mapFrame);
+      } else {
+        loadMap();
+      }
     }
 
     const kakao = buildKakaoMapUrl(L);
@@ -839,238 +904,6 @@
     if (loc) loc.addEventListener("click", () => scrollToId("location"));
   }
 
-  function initGuestbook() {
-    const form = document.getElementById("guestbook-form");
-    const list = document.getElementById("guestbook-list");
-    const empty = document.getElementById("guestbook-empty");
-    const nameInput = document.getElementById("guestbook-name");
-    const msgInput = document.getElementById("guestbook-message");
-    const nameCounter = document.getElementById("guestbook-name-counter");
-    const msgCounter = document.getElementById("guestbook-message-counter");
-    const pagination = document.getElementById("guestbook-pagination");
-    const prevBtn = document.getElementById("guestbook-prev");
-    const nextBtn = document.getElementById("guestbook-next");
-    const pageNumbers = document.getElementById("guestbook-page-numbers");
-    const adminBtn = document.getElementById("guestbook-admin-btn");
-    if (
-      !form ||
-      !list ||
-      !empty ||
-      !nameInput ||
-      !msgInput ||
-      !nameCounter ||
-      !msgCounter ||
-      !pagination ||
-      !prevBtn ||
-      !nextBtn ||
-      !pageNumbers ||
-      !adminBtn
-    )
-      return;
-
-    const STORAGE_KEY = "invite-guestbook-v1";
-    const ITEMS_PER_PAGE = 4;
-    const MAX_ITEMS = 100;
-    const ADMIN_PASSWORD =
-      (cfg.guestbook && cfg.guestbook.adminPassword) || cfg.guestbookAdminPassword || "0000";
-    let currentPage = 1;
-    let isAdminMode = false;
-
-    function safeTrim(value) {
-      return String(value || "").trim();
-    }
-
-    function formatDateLabel(iso) {
-      const d = new Date(iso);
-      const yy = String(d.getFullYear()).slice(-2);
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      const hh = String(d.getHours()).padStart(2, "0");
-      const min = String(d.getMinutes()).padStart(2, "0");
-      return `${yy}.${mm}.${dd} ${hh}:${min}`;
-    }
-
-    function readEntries() {
-      try {
-        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-        if (!Array.isArray(parsed)) return [];
-        return parsed.filter((item) => item && item.name && item.message && item.createdAt);
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function writeEntries(entries) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries.slice(0, MAX_ITEMS)));
-    }
-
-    function makeCard(entry, index) {
-      const item = document.createElement("article");
-      item.className = "guestbook-item";
-      item.style.setProperty("--card-tilt", `${index % 2 === 0 ? -1.2 : 1.1}deg`);
-
-      const top = document.createElement("div");
-      top.className = "guestbook-item__top";
-
-      const name = document.createElement("strong");
-      name.className = "guestbook-item__name";
-      name.textContent = entry.name;
-
-      const badge = document.createElement("span");
-      badge.className = "guestbook-item__badge";
-      badge.textContent = "축하";
-
-      const message = document.createElement("p");
-      message.className = "guestbook-item__message";
-      message.textContent = entry.message;
-
-      const date = document.createElement("time");
-      date.className = "guestbook-item__date";
-      date.dateTime = entry.createdAt;
-      date.textContent = formatDateLabel(entry.createdAt);
-
-      if (isAdminMode) {
-        const del = document.createElement("button");
-        del.type = "button";
-        del.className = "guestbook-item__delete";
-        del.dataset.id = entry.createdAt;
-        del.textContent = "삭제";
-        top.append(name, badge, del);
-      } else {
-        top.append(name, badge);
-      }
-      item.append(top, message, date);
-      return item;
-    }
-
-    function renderPagination(total) {
-      const pageCount = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE));
-      if (currentPage > pageCount) currentPage = pageCount;
-      pagination.hidden = pageCount <= 1;
-      prevBtn.disabled = currentPage <= 1;
-      nextBtn.disabled = currentPage >= pageCount;
-
-      pageNumbers.innerHTML = "";
-      for (let i = 1; i <= pageCount; i++) {
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "guestbook-page-number";
-        if (i === currentPage) b.classList.add("is-active");
-        b.textContent = String(i);
-        b.dataset.page = String(i);
-        pageNumbers.appendChild(b);
-      }
-    }
-
-    function renderEntries(entries) {
-      list.innerHTML = "";
-      if (!entries.length) {
-        empty.hidden = false;
-        pagination.hidden = true;
-        return;
-      }
-      empty.hidden = true;
-      renderPagination(entries.length);
-      const start = (currentPage - 1) * ITEMS_PER_PAGE;
-      const view = entries.slice(start, start + ITEMS_PER_PAGE);
-      view.forEach((entry, idx) => list.appendChild(makeCard(entry, idx)));
-    }
-
-    function updateCounters() {
-      nameCounter.textContent = `${nameInput.value.length}/10`;
-      msgCounter.textContent = `${msgInput.value.length}/1000`;
-    }
-
-    let entries = readEntries();
-    renderEntries(entries);
-    updateCounters();
-
-    nameInput.addEventListener("input", updateCounters);
-    msgInput.addEventListener("input", updateCounters);
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = safeTrim(nameInput.value);
-      const message = safeTrim(msgInput.value);
-      if (!name) {
-        showToast("이름을 입력해주세요.");
-        nameInput.focus();
-        return;
-      }
-      if (!message) {
-        showToast("내용을 입력해주세요.");
-        msgInput.focus();
-        return;
-      }
-
-      const next = {
-        name,
-        message,
-        createdAt: new Date().toISOString(),
-      };
-
-      entries = [next, ...entries].slice(0, MAX_ITEMS);
-      currentPage = 1;
-      writeEntries(entries);
-      renderEntries(entries);
-
-      form.reset();
-      updateCounters();
-      showToast("축하 메시지가 등록되었습니다.");
-    });
-
-    pageNumbers.addEventListener("click", (e) => {
-      const btn = e.target.closest(".guestbook-page-number");
-      if (!btn || !btn.dataset.page) return;
-      currentPage = Number(btn.dataset.page) || 1;
-      renderEntries(entries);
-    });
-
-    prevBtn.addEventListener("click", () => {
-      if (currentPage <= 1) return;
-      currentPage--;
-      renderEntries(entries);
-    });
-
-    nextBtn.addEventListener("click", () => {
-      const pageCount = Math.max(1, Math.ceil(entries.length / ITEMS_PER_PAGE));
-      if (currentPage >= pageCount) return;
-      currentPage++;
-      renderEntries(entries);
-    });
-
-    list.addEventListener("click", (e) => {
-      const btn = e.target.closest(".guestbook-item__delete");
-      if (!btn || !btn.dataset.id) return;
-      entries = entries.filter((entry) => entry.createdAt !== btn.dataset.id);
-      writeEntries(entries);
-      renderEntries(entries);
-      showToast("메시지를 삭제했습니다.");
-    });
-
-    adminBtn.addEventListener("click", () => {
-      if (isAdminMode) {
-        isAdminMode = false;
-        adminBtn.classList.remove("is-active");
-        adminBtn.textContent = "관리자";
-        renderEntries(entries);
-        showToast("관리자 모드를 종료했습니다.");
-        return;
-      }
-      const input = window.prompt("관리자 비밀번호를 입력하세요.");
-      if (input == null) return;
-      if (String(input) !== String(ADMIN_PASSWORD)) {
-        showToast("비밀번호가 올바르지 않습니다.");
-        return;
-      }
-      isAdminMode = true;
-      adminBtn.classList.add("is-active");
-      adminBtn.textContent = "삭제 모드";
-      renderEntries(entries);
-      showToast("관리자 삭제 모드가 활성화되었습니다.");
-    });
-  }
-
   applyCustomFonts();
   renderHero();
   initHeroFlowerRain();
@@ -1088,5 +921,4 @@
   renderFooter();
   bindHeroButtons();
   initSurprisePhotos();
-  initGuestbook();
 })();
